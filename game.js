@@ -4,6 +4,7 @@ let ctx = canvas.getContext("2d");
 const GRAV_CONST = 0.8;
 const DT = 1 / 60;
 const RADIUS = 16;
+const PARTICLE_RADIUS = 5;
 const BOUNCINESS = 0.7;
 const PLAYER_ACC = 5;
 const GAME_STATE = {
@@ -12,6 +13,7 @@ const GAME_STATE = {
 };
 
 let planets = [];
+let fx = [];
 
 let mouse = {
 	x: 0,
@@ -34,7 +36,7 @@ let toTimeStr = function(ticks) {
 }
 
 let generatePlanets = function() {
-	for(let i = 0; i < 14; i++) {
+	for(let i = 0; i < 10; i++) {
 		planets.push({
 			x: Math.random() * (canvas.width - RADIUS) + RADIUS / 2,
 			y: Math.random() * (canvas.height - RADIUS) + RADIUS / 2,
@@ -53,6 +55,7 @@ let generatePlanets = function() {
 
 let resetGame = function() {
 	planets = [];
+	fx = [];
 	generatePlanets();
 	game.ticks = 0;
 	game.state = GAME_STATE.RUNNING;
@@ -138,6 +141,19 @@ let step = function() {
 	if(mouse.down) {
 		planets[0].ax = Math.cos(planets[0].heading) * PLAYER_ACC;
 		planets[0].ay = Math.sin(planets[0].heading) * PLAYER_ACC;
+		
+		/* potentially create particle */
+		if(Math.random() > 0.7) {
+			let angle = planets[0].heading + Math.random() - 0.5;
+			fx.push({
+				age: 0,
+				x: planets[0].x,
+				y: planets[0].y,
+				vx: -Math.cos(angle) * PLAYER_ACC * 20,
+				vy: -Math.sin(angle) * PLAYER_ACC * 20
+			});
+		}
+		
 	} else {
 		planets[0].ax = 0;
 		planets[0].ay = 0;
@@ -149,6 +165,32 @@ let draw = function() {
 
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    /* draw fx */
+	for(let i = 0; i < fx.length; i++) {
+		let particle = fx[i];
+		
+		particle.vx *= 0.99;
+		particle.vy *= 0.99;
+		
+		particle.x += particle.vx * DT;
+		particle.y += particle.vy * DT;
+		
+		particle.age++;
+		
+		let r = Math.floor(255 / Math.max(particle.age / 2 - 10, 1));
+		let g = Math.floor(140 / Math.max(particle.age / 2 - 10, 1));
+		ctx.fillStyle = "rgb(" + r + ", " + g + ", 0)";
+		
+		ctx.beginPath();
+		ctx.arc(particle.x, particle.y, PARTICLE_RADIUS, 0, 2 * Math.PI);
+		ctx.closePath();
+		ctx.fill();
+	}
+	
+	/* destroy totally darkened smoke particles */
+	for(let i = fx.length - 1; i >= 0; i--)
+		if(fx[i].age > 100) fx.splice(i, 1);
 
 	/* draw everything faded if in death screen */
 	if(game.state == GAME_STATE.DEAD) ctx.globalAlpha = 0.5;
