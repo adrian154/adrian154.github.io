@@ -259,7 +259,7 @@ let draw = function() {
 	}
 	
 	/* draw fuel meter */
-	ctx.fillStyle = "#00ff00";
+	ctx.fillStyle = "rgb(" + ((100 - fuel) * 5.12) + "," + (fuel  * 2.56) + ", 0)";
 	ctx.fillRect(492, 20, 10, fuel * 4.72);
 	ctx.font = "10px Consolas"
 	ctx.fillText(Math.floor(fuel) + "%", 486, fuel * 4.72 + 30)
