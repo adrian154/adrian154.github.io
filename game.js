@@ -14,6 +14,7 @@ const GAME_STATE = {
 
 let planets = [];
 let fx = [];
+let fuel = 100;
 
 let mouse = {
 	x: 0,
@@ -59,6 +60,7 @@ let resetGame = function() {
 	generatePlanets();
 	game.ticks = 0;
 	game.state = GAME_STATE.RUNNING;
+	fuel = 100;
 };
 
 let step = function() {
@@ -139,19 +141,23 @@ let step = function() {
 	/* update player by controls */
 	planets[0].heading = Math.atan2(mouse.y - planets[0].y, mouse.x - planets[0].x);
 	if(mouse.down) {
-		planets[0].ax = Math.cos(planets[0].heading) * PLAYER_ACC;
-		planets[0].ay = Math.sin(planets[0].heading) * PLAYER_ACC;
-		
-		/* potentially create particle */
-		if(Math.random() > 0.7) {
-			let angle = planets[0].heading + Math.random() - 0.5;
-			fx.push({
-				age: 0,
-				x: planets[0].x,
-				y: planets[0].y,
-				vx: -Math.cos(angle) * PLAYER_ACC * 20,
-				vy: -Math.sin(angle) * PLAYER_ACC * 20
-			});
+		if(fuel > 0) {
+			planets[0].ax = Math.cos(planets[0].heading) * PLAYER_ACC;
+			planets[0].ay = Math.sin(planets[0].heading) * PLAYER_ACC;
+			
+			/* potentially create particle */
+			if(Math.random() > 0.7) {
+				let angle = planets[0].heading + Math.random() - 0.5;
+				fx.push({
+					age: 0,
+					x: planets[0].x,
+					y: planets[0].y,
+					vx: -Math.cos(angle) * PLAYER_ACC * 20,
+					vy: -Math.sin(angle) * PLAYER_ACC * 20
+				});
+			}
+			
+			fuel -= 0.2;
 		}
 		
 	} else {
@@ -248,6 +254,10 @@ let draw = function() {
 		
 		ctx.textAlign = "left";	
 	}
+	
+	/* draw fuel meter */
+	ctx.fillStyle = "#00ff00";
+	ctx.fillRect(492, 20, 10, fuel * 4.72);
 	
 };
 
