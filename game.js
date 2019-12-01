@@ -13,7 +13,7 @@ const GAME_STATE = {
 };
 
 let planets = [];
-let fx = [];
+let particles = [];
 let fuel = 100;
 
 let mouse = {
@@ -38,25 +38,27 @@ let toTimeStr = function(ticks) {
 
 let generatePlanets = function() {
 	for(let i = 0; i < 10; i++) {
+		let radius = Math.random() * 10 - 5 + RADIUS;
 		planets.push({
 			x: Math.random() * (canvas.width - RADIUS) + RADIUS / 2,
 			y: Math.random() * (canvas.height - RADIUS) + RADIUS / 2,
-			vx: 0,
-			vy: 0,
+			vx: Math.random() * 10 - 5,
+			vy: Math.random() * 10 - 5,
 			ax: 0,
 			ay: 0,
-			radius: RADIUS,
-			mass: RADIUS * RADIUS
+			radius: radius,
+			mass: radius * radius
 		});
 	}
 	
 	/* add player properties to player planet */
 	planets[0].heading = 0;
+	planets[0].radius = 16;
 };
 
 let resetGame = function() {
 	planets = [];
-	fx = [];
+	particles = [];
 	generatePlanets();
 	game.ticks = 0;
 	game.state = GAME_STATE.RUNNING;
@@ -139,16 +141,16 @@ let step = function() {
 	}
 	
 	/* update player by controls */
-	planets[0].heading = Math.atan2(mouse.y - planets[0].y, mouse.x - planets[0].x);
+	planets[0].heading = Math.atan2((mouse.y - planets[0].y), (mouse.x - planets[0].x));
 	if(mouse.down) {
-		if(fuel > 0) {
+		if(fuel >= 0.2) {
 			planets[0].ax = Math.cos(planets[0].heading) * PLAYER_ACC;
 			planets[0].ay = Math.sin(planets[0].heading) * PLAYER_ACC;
 			
 			/* potentially create particle */
 			if(Math.random() > 0.7) {
 				let angle = planets[0].heading + Math.random() - 0.5;
-				fx.push({
+				particles.push({
 					age: 0,
 					x: planets[0].x,
 					y: planets[0].y,
@@ -157,6 +159,7 @@ let step = function() {
 				});
 			}
 			
+			/* deplete fuel */
 			fuel -= 0.2;
 		}
 		
@@ -172,12 +175,12 @@ let draw = function() {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    /* draw fx */
-	for(let i = 0; i < fx.length; i++) {
-		let particle = fx[i];
+    /* draw particles */
+	for(let i = 0; i < particles.length; i++) {
+		let particle = particles[i];
 		
-		particle.vx *= 0.99;
-		particle.vy *= 0.99;
+		//particle.vx *= 0.99;
+		//particle.vy *= 0.99;
 		
 		particle.x += particle.vx * DT;
 		particle.y += particle.vy * DT;
@@ -195,8 +198,8 @@ let draw = function() {
 	}
 	
 	/* destroy totally darkened smoke particles */
-	for(let i = fx.length - 1; i >= 0; i--)
-		if(fx[i].age > 100) fx.splice(i, 1);
+	for(let i = particles.length - 1; i >= 0; i--)
+		if(particles[i].age > 100) particles.splice(i, 1);
 
 	/* draw everything faded if in death screen */
 	if(game.state == GAME_STATE.DEAD) ctx.globalAlpha = 0.5;
@@ -258,6 +261,8 @@ let draw = function() {
 	/* draw fuel meter */
 	ctx.fillStyle = "#00ff00";
 	ctx.fillRect(492, 20, 10, fuel * 4.72);
+	ctx.font = "10px Consolas"
+	ctx.fillText(Math.floor(fuel) + "%", 486, fuel * 4.72 + 30)
 	
 };
 
