@@ -9,7 +9,8 @@ const BOUNCINESS = 0.7;
 const PLAYER_ACC = 5;
 const GAME_STATE = {
 	RUNNING: 1,
-	DEAD: 2
+	DEAD: 2,
+	PAUSE: 3
 };
 
 let planets = [];
@@ -149,13 +150,22 @@ let step = function() {
 			
 			/* potentially create particle */
 			if(Math.random() > 0.7) {
-				let angle = planets[0].heading + Math.random() - 0.5;
+				let angle = planets[0].heading + Math.random() * 2 - 1;
+				
+				let r, g, b;
+				r = 255;
+				g = Math.random() * 20 - 10 + 140;
+				b = 0;             
+				
 				particles.push({
 					age: 0,
 					x: planets[0].x,
 					y: planets[0].y,
 					vx: -Math.cos(angle) * PLAYER_ACC * 20,
-					vy: -Math.sin(angle) * PLAYER_ACC * 20
+					vy: -Math.sin(angle) * PLAYER_ACC * 20,
+					r: r,
+					g: g,
+					b: b
 				});
 			}
 			
@@ -176,26 +186,27 @@ let draw = function() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     /* draw particles */
+    ctx.globalAlpha = 0.7;
 	for(let i = 0; i < particles.length; i++) {
 		let particle = particles[i];
 		
-		//particle.vx *= 0.99;
-		//particle.vy *= 0.99;
+		if(game.state == GAME_STATE.RUNNING || game.state == GAME_STATE.DEAD) {
+			particle.x += particle.vx * DT;
+			particle.y += particle.vy * DT;
+			particle.age++;
+		}
 		
-		particle.x += particle.vx * DT;
-		particle.y += particle.vy * DT;
-		
-		particle.age++;
-		
-		let r = Math.floor(255 / Math.max(particle.age / 2 - 10, 1));
-		let g = Math.floor(140 / Math.max(particle.age / 2 - 10, 1));
-		ctx.fillStyle = "rgb(" + r + ", " + g + ", 0)";
+		let r = Math.floor(particle.r / Math.max(particle.age / 2 - 10, 1));
+		let g = Math.floor(particle.g / Math.max(particle.age / 2 - 10, 1));
+		let b = Math.floor(particle.b / Math.max(particle.age / 2 - 10, 1));
+		ctx.fillStyle = "rgb(" + r + ", " + g + "," + b + ")";
 		
 		ctx.beginPath();
 		ctx.arc(particle.x, particle.y, PARTICLE_RADIUS, 0, 2 * Math.PI);
 		ctx.closePath();
 		ctx.fill();
 	}
+	ctx.globalAlpha = 1;
 	
 	/* destroy totally darkened smoke particles */
 	for(let i = particles.length - 1; i >= 0; i--)
@@ -288,6 +299,8 @@ window.addEventListener("mousemove", function(event) {
 
 window.addEventListener("keydown", function(event) {
 	if(game.state == GAME_STATE.DEAD) resetGame();
+	else if(game.state == GAME_STATE.RUNNING && event.key == " ") game.state = GAME_STATE.PAUSED;
+	else if(game.state == GAME_STATE.PAUSED && event.key == " ") game.state = GAME_STATE.RUNNING;
 });
 
 canvas.addEventListener("mousedown", function(event) {
