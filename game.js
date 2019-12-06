@@ -1,7 +1,7 @@
 let canvas = document.getElementById("game");
 let ctx = canvas.getContext("2d");
 
-const GRAV_CONST = 1.2;
+const GRAV_CONST = 2.0;
 const DT = 1 / 60;
 const RADIUS = 12;
 const PARTICLE_RADIUS = 5;
