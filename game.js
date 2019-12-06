@@ -43,8 +43,8 @@ let generatePlanets = function() {
 		planets.push({
 			x: Math.random() * (canvas.width - RADIUS) + RADIUS / 2,
 			y: Math.random() * (canvas.height - RADIUS) + RADIUS / 2,
-			vx: Math.random() * 10 - 5,
-			vy: Math.random() * 10 - 5,
+			vx: Math.random() * 30 - 15,
+			vy: Math.random() * 30 - 15,
 			ax: 0,
 			ay: 0,
 			radius: radius,
