@@ -16,6 +16,7 @@ const GAME_STATE = {
 let planets = [];
 let particles = [];
 let fuel = 100;
+let debug = false;
 
 let mouse = {
 	x: 0,
@@ -139,6 +140,13 @@ let step = function() {
 			
 			}
 		}
+		
+		/* Debug */
+		ctx.beginPath();
+		ctx.moveTo(planet.x, planet.y);
+		ctx.lineTo(planet.x + planet.vx, planet.y + planet.vy);
+		ctx.closePath();
+		ctx.stroke();
 	}
 	
 	/* update player by controls */
