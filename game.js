@@ -142,11 +142,14 @@ let step = function() {
 		}
 		
 		/* Debug */
-		ctx.beginPath();
-		ctx.moveTo(planet.x, planet.y);
-		ctx.lineTo(planet.x + planet.vx, planet.y + planet.vy);
-		ctx.closePath();
-		ctx.stroke();
+		if(debug) {
+			ctx.beginPath();
+			ctx.moveTo(planet.x, planet.y);
+			ctx.lineTo(planet.x + planet.vx, planet.y + planet.vy);
+			ctx.closePath();
+			ctx.lineWidth = 1;
+			ctx.stroke();
+		}
 	}
 	
 	/* update player by controls */
@@ -309,6 +312,7 @@ window.addEventListener("keydown", function(event) {
 	if(game.state == GAME_STATE.DEAD) resetGame();
 	else if(game.state == GAME_STATE.RUNNING && event.key == " ") game.state = GAME_STATE.PAUSED;
 	else if(game.state == GAME_STATE.PAUSED && event.key == " ") game.state = GAME_STATE.RUNNING;
+	if(event.key == "d") debug = !debug;
 });
 
 canvas.addEventListener("mousedown", function(event) {
