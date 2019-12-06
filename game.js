@@ -148,6 +148,7 @@ let step = function() {
 			ctx.lineTo(planet.x + planet.vx, planet.y + planet.vy);
 			ctx.closePath();
 			ctx.lineWidth = 1;
+			ctx.strokeStyle = "#00FF00";
 			ctx.stroke();
 		}
 	}
