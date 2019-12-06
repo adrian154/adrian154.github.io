@@ -39,7 +39,7 @@ let toTimeStr = function(ticks) {
 }
 
 let generatePlanets = function() {
-	for(let i = 0; i < 10; i++) {
+	for(let i = 0; i < 15; i++) {
 		let radius = Math.random() * 10 - 5 + RADIUS;
 		planets.push({
 			x: Math.random() * (canvas.width - RADIUS) + RADIUS / 2,
