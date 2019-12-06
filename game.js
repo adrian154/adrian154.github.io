@@ -3,7 +3,7 @@ let ctx = canvas.getContext("2d");
 
 const GRAV_CONST = 1.5;
 const DT = 1 / 60;
-const RADIUS = 16;
+const RADIUS = 12;
 const PARTICLE_RADIUS = 5;
 const BOUNCINESS = 0.7;
 const PLAYER_ACC = 5;
