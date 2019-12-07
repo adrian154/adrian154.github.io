@@ -82,7 +82,7 @@ let step = function() {
 			let distSquared = dx * dx + dy * dy;
 			let dist = Math.sqrt(distSquared);
 			
-			let force = GRAV_CONST * planet.mass * planet2.mass / dist;
+			let force = GRAV_CONST * planet.mass * planet2.mass / distSquared;
 			
 			xForce += force * dx / dist;
 			yForce += force * dy / dist;
