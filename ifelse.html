@@ -1,0 +1,165 @@
+<html>
+
+    <head>
+        <title>If-Else in JavaScript</title>
+        <link rel="stylesheet" href="style.css">
+        <style>
+#bug {
+    opacity: 0;
+    transition-duration: 0.75s;
+}
+        </style>
+    </head>
+
+    <body>
+        
+        <div id="top">
+            <h2 id="banner-text">Adrian Academy</h2>
+        </div>
+
+        <div id="left-explanation">
+            <h1 style="margin: 0px;">If-Else</h1>
+            <p>In this tutorial you'll learn about conditional statements in JavaScript.</p>
+
+            <h2>Explanation</h2>
+            <p>Conditional statements allow you to do different things based on a condition's validity.</p>
+
+            <h3>Syntax</h3>
+            <p>The general syntax of an if statement is like this:</p>
+
+            <pre><code>if(condition) {
+    statement;
+}</code></pre>
+
+            <p>If the "<code>condition</code>" is "<code>true</code>", then "<code>statement</code>" will run. It's quite simple.</p>
+
+            <h3>Else statements</h3>
+            <p> "<code>If</code>" statements have an extension, "<code>else</code>".</p>
+            <p>The code in the "<code>else</code>" statement will run if the code in the "<code>if</code>" statement <b>isn't</b> executed.</p>
+
+            <h2>Task</h2>
+            <ol>
+                <li>Read the input from the user with "<code>prompt</code>" increased by 5.</li>
+                <li>But if the input is greater than 7, print the number.</li>
+            </ol>
+
+            <div id="bug">
+                <h2>Bug</h2>
+                <p>When you added 5, you might have noticed that instead of adding it arithmetically, JS just tacked the 5 onto the number. This is because <code>prompt</code> returns a string. Addition on a string and a number will simply concatenate the two.</p>
+                <pre><code>2 + 2 = 4
+    "2" + 2 = "22"
+    "2" - 2 = 0
+    "stuff" - 2 = NaN</code></pre>
+
+                <p>This is one of the many oddities from JS.</p>
+            </div>
+        </div>
+
+        <div id="right-editor">
+        
+            <textarea id="codearea" cols="80" rows="50" placeholder="Code goes here...">/* Write your code here. */</textarea><br>
+            <textarea id="resultarea" cols="80" rows="10" placeholder="Result shows up here..." readonly>The result of your program will show up here.</textarea><br>
+            <button onClick="runCode()" id="gobutton">Run Code</button>
+            <button onClick="progress()" id="nextbutton">Next</button>
+            <p id="resulttext"></p>
+        
+        </div>
+
+        <script>
+
+let codeArea = document.getElementById("codearea");
+let resultArea = document.getElementById("resultarea");
+let resultText = document.getElementById("resulttext");
+
+/* Hooked console.log writes to this */
+let results;
+let gResult = 0;
+
+function runCode() {
+
+    /* Get code. */
+    let code = codeArea.value;
+
+    /* Reset results. */
+    results = [];
+    resultArea.value = "";
+    resultArea.style.color = "#ffffff";
+
+    /* Hook into console.log */
+    console.oldLog = console.log;
+    console.log = function(value) {
+        results.push(value);
+        resultArea.value += value + "\n";
+    }
+
+    /* Run code, 1st pass (just for show) */
+    try {
+        
+        /* Evaluate the code. */
+        eval(code);
+
+    } catch(exception) {
+
+        /* Exception, exit early. */
+        resultArea.value = exception;    
+        resultText.innerHTML = "Your code had an error. Try again.";
+        return;
+    
+    }
+
+    /* Check if user printed. */
+    if(results.length == 0) {
+        console.log("You didn't print anything.");
+        return;
+    } 
+
+    /* Hook prompt() and rerun code */
+    console.log = function(value) {
+        gResult = value;
+    }
+    let oldPrompt = prompt;
+    let value = Math.random() * 20;
+    prompt = function() { return value; }
+
+    /* Rerun code */
+    try {
+        eval(code);
+    } catch(exception) {
+
+        /* Exception, exit early. */
+        resultArea.value = exception;    
+        resultArea.style.color = "#ff0000";
+        resultText.innerHTML = "Your code had an error. Try again.";
+        return;
+    
+    }
+
+    /* Verify output */
+    if(results.length == 0) {
+        resultText.innerHTML = "You didn't print anything...";
+    } else {
+
+        /* Verify line 1. */
+        if(value > 7 && gResult == value || value < 7 && gResult == value + 5) {
+            resultText.innerHTML = "Good job!";
+            document.getElementById("nextbutton").style.opacity = 1;
+
+            /* Unhide bug. */
+            document.getElementById("bug").style.opacity = "1";
+        } else {
+            resultText.innerHTML = "No.";
+        }
+
+    }
+
+}
+
+function progress() {
+    window.location.href = "input.html";
+}
+        </script>
+        <script src="tabfix.js"></script>
+    
+    </body>
+
+</html>

@@ -1,0 +1,11 @@
+.skill-button {
+    display: inline-block;
+
+    width: 9.0em;
+    height: 9.0em;
+    border-radius: 12px;
+    background-color: #ffffff;
+    color: #000000;
+    margin: 1.0em;
+    padding: 0.5em;
+}

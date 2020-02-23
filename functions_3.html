@@ -1,0 +1,114 @@
+<html>
+
+    <head>
+        <title>Functions in JavaScript</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        
+        <div id="left-explanation">
+            <h1 style="margin: 0px;">Functions 3</h1>
+            <p>In this tutorial you'll learn about returning values from functions in JavaScript.</p>
+
+            <h2>Explanation</h2>
+            <p>The return statement used in functions tell the function to stop running, and to return an output.</p>
+
+            <h3>Example Code</h3>
+            <p>Parameters are always attached behind a function's name. The sequencing of the variables determine which is assigned to which parameter.</p>
+            <p>syntax here</p>
+
+            <h3>Usage</h3>
+            <p>Parameters are incredibly useful for advanced programming. It allows for calculation within a function without changing any variables.</p>
+
+            <h2>Task</h2>
+            <p>task here</p>
+           
+        </div>
+
+        <div id="right-editor">
+        
+            <textarea id="codearea" cols="80" rows="50" placeholder="Code goes here...">/* Write your code here. */</textarea><br>
+            <textarea id="resultarea" cols="80" rows="10" placeholder="Result shows up here..." readonly>The result of your program will show up here.</textarea><br>
+            <button onClick="runCode()" id="gobutton">Run Code</button>
+            <button onClick="progress()" id="nextbutton">Next</button>
+            <p id="resulttext"></p>
+        
+        </div>
+
+        <script>
+
+let codeArea = document.getElementById("codearea");
+let resultArea = document.getElementById("resultarea");
+let resultText = document.getElementById("resulttext");
+
+/* Hooked console.log writes to this */
+let results;
+
+function checkOutput(results,indexes,msg) {
+    bools = []
+    for(let i = 0; i < indexes.length; i++) {
+        if(results[indexes[i]] === msg) {
+            bools.push(true)
+        }
+    }
+    if(bools.length === indexes.length) {
+        return true
+    }
+    return false
+}
+
+function runCode() {
+
+    /* Get code. */
+    let code = codeArea.value;
+
+
+
+    /* Reset results. */
+    results = [];
+    resultArea.value = "";
+
+    /* Hook into console.log */
+    console.oldLog = console.log;
+    console.log = function(value) {
+        results.push(value);
+        resultArea.value += value + "\n";
+    }
+
+    /* Run code */
+    try {
+        
+        /* Evaluate the code. */
+        eval(code);
+
+    } catch(exception) {
+
+        /* Exception, exit early. */
+        resultArea.value = exception;    
+        resultText.innerHTML = "Your code had an error. Try again.";
+        resultArea.style.color = "#ff0000";
+        return;
+    
+    }
+
+    /* Verify results. */
+    if(results.length >= 4) {
+        if(checkOutput(results,[0,2],"i <3 js") === true && checkOutput(results,[1,3],"i <3 js") === true) {
+            resultText.innerHTML = "Good job! You did it!!";
+            document.getElementById("nextbutton").style.opacity = 1;
+        } else {
+            resultText.innerHTML = "You printed the wrong thing.";
+        }
+    } else {
+        resultText.innerHTML = "You didn't print anything...";
+    }
+
+}
+
+        </script>
+        <script src="tabfix.js"></script>
+    
+    </body>
+
+</html>

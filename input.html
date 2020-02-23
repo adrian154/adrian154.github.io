@@ -1,0 +1,101 @@
+<html>
+
+    <head>
+        <title>Alerts and Prompts in JavaScript</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        
+        <div id="top">
+            <h2 id="banner-text">Adrian Academy</h2>
+        </div>
+
+        <div id="left-explanation">
+            <h1 style="margin: 0px;">Alert and Prompt</h1>
+            <p>In this tutorial you'll learn about alerts and prompts in JavaScript.</p>
+
+            <h2>Explanation</h2>
+            <p>JavaScript has two built-in methods for showing information to the user, "<code>alert</code>" and "<code>prompt</code>".</p>
+            
+            <h3>Alert</h3>
+            <p>To show a small popup with text to the user, you can use "<code>alert(text)</code>".</p>
+            <button onclick="demoAlert()">Click me to see an example alert</button>
+
+            <h3>Prompt</h3>
+            <p>"<code>prompt</code>" is similar to "<code>alert</code>", except "<code>prompt</code>" can return what the user typed.</p>
+            
+            <pre><code>let input = prompt("Enter some text.");
+console.log("You typed " + input);</code></pre>
+
+            <h2>Task</h2>
+            <ol>
+                <li>There's no task for this mini-tutorial. Just try using <code>alert</code> and <code>prompt</code> in the editor.</li>
+            </ol>
+
+        </div>
+
+        <div id="right-editor">
+        
+            <textarea id="codearea" cols="80" rows="50" placeholder="Code goes here...">alert("Try using the two methods to create something!");</textarea><br>
+            <textarea id="resultarea" cols="80" rows="10" placeholder="Result shows up here..." readonly>The result of your program will show up here.</textarea><br>
+            <button onClick="runCode()" id="gobutton">Run Code</button>
+            <button onClick="progress()" id="nextbutton">Next</button>
+            <p id="resulttext"></p>
+        
+        </div>
+
+        <script>
+
+let codeArea = document.getElementById("codearea");
+let resultArea = document.getElementById("resultarea");
+
+/* Hooked console.log writes to this */
+let results;
+
+function demoAlert() {
+    alert("ALERT! You clicked a button.");
+}
+
+function runCode() {
+
+    /* Get code. */
+    let code = codeArea.value;
+
+    /* Reset results. */
+    results = [];
+    resultArea.value = "";
+    resultArea.style.color = "#ffffff";
+
+    /* Hook into console.log */
+    console.oldLog = console.log;
+    console.log = function(value) {
+        results.push(value);
+        resultArea.value += value + "\n";
+    }
+
+    /* Run code */
+    try {
+        
+        /* Evaluate the code. */
+        eval(code);
+
+    } catch(exception) {
+
+        /* Exception, exit early. */
+        resultArea.value = exception;    
+        resultArea.style.color = "#ff0000";
+        return;
+    
+    }
+
+}
+
+function progress() {
+    window.location.href = "whileloops.html";
+}
+        </script>
+    
+    </body>
+
+</html>
