@@ -2,12 +2,20 @@ const OUTPUT_WIDTH = 512;
 const OUTPUT_HEIGHT = 512;
 
 const shaderSource = `#version 310 es
+
 layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
-layout (rgba8, binding = 0) writeonly uniform highp image2D destTexture;
+layout (rgba8, binding = 0) writeonly uniform highp image2D outputTexture;
 
 void main() {
+    
+    /* Exact x-y of output */
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-    imageStore(destTexture, storePos, vec4(vec2(gl_WorkGroupID.xy) / vec2(gl_NumWorkGroups.xy), 0.0, 1.0));
+    ivec2 imageSize = ivec2(gl_NumWorkGroups.xy * gl_WorkGroupSize.xy);
+    vec2 uv = vec2(storePos) / vec2(imageSize);
+
+    vec4 color = vec4(uv.x, 1.0, uv.y, 1.0);
+    imageStore(outputTexture, storePos, color);
+    
 }
 `;
 
