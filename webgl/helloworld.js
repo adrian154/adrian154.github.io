@@ -90,8 +90,8 @@ let positions = [
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
 
-
-
+/* ---------------------- BEFORE THIS SETUP CODE ----------------------*/
+/* -------------------- AFTER THIS RENDERING CODE -------------------- */
 
 
 // set up GL viewport
