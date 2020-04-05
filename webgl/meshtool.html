@@ -1,0 +1,44 @@
+<html>
+    
+    <head>
+        <title>OBJ to JSON Mesh Tool</title>
+        <style>
+#drop-zone {
+    background-color: #eeeeee;
+    width: 800px;
+    height: 500px;
+}
+        </style>
+    </head>
+
+    <body>
+
+        <h1>OBJ to JSON mesh converter</h1>
+        <div id="drop-zone"></div>
+        <p>This tool converts Wavefront OBJ 3D files to JSON. That's all.</p>
+        
+        <script>
+const dropZone = document.getElementById("drop-zone");
+
+const handleDragOver = function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+};
+
+const handleFileSelect = function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    for(let file of event.dataTransfer.files) {
+        console.log(file.name);
+    }
+};
+
+dropZone.addEventListener("dragover", handleDragOver);
+dropZone.addEventListener("drop", handleFileSelect);
+        </script>
+    
+    </body>
+
+</html>

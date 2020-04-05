@@ -38,6 +38,9 @@ const init = function () {
     const uFocalLength = context.getUniformLocation(computeProgram, "uFocalLength");
     const uMaxDepth = context.getUniformLocation(computeProgram, "uMaxDepth");
 
+    // put mesh data
+    /* ... */
+
     // create texture for output and bind
     const texture = context.createTexture();
     context.bindTexture(context.TEXTURE_2D, texture);
@@ -55,7 +58,7 @@ const init = function () {
     const animate = function() {
 
         /* Update uniforms. */
-        context.uniform1f(uTime, window.performance.now());
+        context.uniform1f(uTime, window.performance.now() % 100);
         context.uniform1f(uFocalLength, 2.0);
         context.uniform1f(uMaxDepth, 5);
 
