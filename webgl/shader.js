@@ -22,9 +22,9 @@ struct Ray {
 
 /* Sphere */
 struct Sphere {
-    vec3 center;
     float radius;
     int materialIndex;
+    vec3 center;
 };
 
 /* Material */

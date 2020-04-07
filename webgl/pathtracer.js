@@ -21,14 +21,13 @@ const createSphereBuffer = function(context, program) {
     const sphereInt32Data = new Int32Array(sphereBuffer);
     const sphereFloat32Data = new Float32Array(sphereBuffer);
         
-    // On a GPU the sphere looks like:
-    // vec3 center          12 bytes    12
-    // (Padding)            4 bytes     16
-    // float radius         4 bytes     20
-    // (Padding)            12 bytes    32
-    // int materialIndex    4 bytes     36
-    // (Padding)            12 bytes    48
-    // 48 byte size
+    // On a GPU the sphere looks like: (WRONG!!!)
+    // float radius         4 bytes     0
+    // padding              12 bytes    1,2,3
+    // int materialIndex    4 bytes     4
+    // padding              12 bytes    5,6,7
+    // vec3 center          12 bytes    8,9,10
+    // padding              4 bytes     11
 
     // size of Sphere in 4 byte chunks
     const paddedSizex4 = 12;
@@ -37,20 +36,16 @@ const createSphereBuffer = function(context, program) {
 
         let sphere = spheres[i];
 
-        // center
-        sphereFloat32Data[i * paddedSizex4] = sphere.center.x;
-        sphereFloat32Data[i * paddedSizex4 + 1] = sphere.center.y;
-        sphereFloat32Data[i * paddedSizex4 + 2] = sphere.center.z;
-            
-        // padding (1x 4b)
-
         // radius
-        sphereFloat32Data[i * paddedSizex4 + 4] = sphere.radius;
+        sphereFloat32Data[i * paddedSizex4] = sphere.radius
 
-        // padding (3x 4b)
+        // material index
+        sphereInt32Data[i * paddedSizex4 + 4] = sphere.materialIndex;
 
-        // materialIndex
-        sphereInt32Data[i * paddedSizex4 + 8] = sphere.materialIndex;
+        // center
+        sphereFloat32Data[i * paddedSizex4 + 8] = sphere.materialIndex;
+        sphereFloat32Data[i * paddedSizex4 + 9] = sphere.materialIndex;
+        sphereFloat32Data[i * paddedSizex4 + 10] = sphere.materialIndex;
 
     }
 
