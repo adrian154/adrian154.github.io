@@ -20,10 +20,10 @@ struct Ray {
     vec3 direction;
 };
 
-/* Mesh */
-struct Mesh {
-    int offset;             /* Start of triangles in triangles buffer */
-    int numTriangles;       /* Number of triangles in mesh */
+/* Sphere */
+struct Sphere {
+    vec3 center;
+    float radius;
     int materialIndex;
 };
 
@@ -36,86 +36,46 @@ struct Material {
 };
 
 /* Buffers */
-layout (std430, binding = 1) readonly buffer Vertices {
-    vec3 vertices[];
+layout (std430, binding = 1) readonly buffer Spheres {
+    Sphere spheres;
 }; 
-
-layout (std430, binding = 2) readonly buffer Triangles {
-    int triangles[];
-};
-
-layout (std430, binding = 3) readonly buffer Meshes {
-    Mesh meshes[];
-};
 
 layout (std430, binding = 4) readonly buffer Materials {
     Material materials;
 };
 
-/* Use Moller-Trumbore algorithm for fast ray-triangle intersection tests */
-/* No idea how it works */
-bool traceRayTriangle(Ray ray, vec3 v0, vec3 v1, vec3 v2, out float t) {
-    
-    vec3 edge1 = v1 - v0;
-    vec3 edge2 = v2 - v0;
-    vec3 h = cross(ray.direction, edge2);
-    float a = dot(edge1, h);
-    
-    if(a > -EPSILON && a < EPSILON) {
-        return false;
-    }
-
-    float f = 1.0 / a;
-    vec3 s = ray.origin - v0;
-    float u = f * dot(s, h);
-    
-    if(u < 0.0 || u > 1.0) {
-        return false;
-    }
-
-    vec3 q = cross(s, edge1);
-    float v = f * dot(ray.direction, q);
-
-    if(v < 0.0 || u + v > 1.0) {
-        return false;
-    }
-
-    t = f * dot(edge2, q);
-    if(t > EPSILON) {
-        return true;
-    } else {
-        return false;
-    }
-
+/* Get point on a ray */
+vec3 pointOnRay(Ray ray, float t) {
+    return ray.origin + ray.direction * t;
 }
 
-/* Intersection test with mesh. */
-bool traceRayMesh(Ray ray, Mesh mesh, inout float t, inout vec3 normal) {
+/* Raytrace sphere */
+bool traceRaySphere(Ray ray, Sphere sphere, inout float t, inout vec3 normal) {
 
-    bool hit = false;
-    float minT;
+    vec3 center = sphere.center - ray.origin;
 
-    for(int i = 0; i < mesh.numTriangles; i++) {
-        
-        vec3 v0 = vertices[triangles[mesh.offset + i]];
-        vec3 v1 = vertices[triangles[mesh.offset + i + 1]];
-        vec3 v2 = vertices[triangles[mesh.offset + i + 2]];
+    float b = -2.0 * dot(ray.direction, center);
+    float c = dot(center, center) - sphere.radius * sphere.radius;
 
-        if(traceRayTriangle(ray, v0, v1, v2, t) && t < minT && t >= EPSILON) {
-            minT = t;
-            hit = true;
-        }
-
-        /* Compute normal */
-        normal = cross(v1 - v0, v2 - v0);
-
+    float discrim = b * b - 4.0 * c; 
+    if(discrim < 0.0) {
+        return false;
     }
 
-    if(hit) {
-        t = minT;
+    discrim = sqrt(discrim);
+    t = (-b + discrim) / 2.0;
+    if(t < EPSILON) {
+        t = (-b - discrim) / 2.0;
     }
 
-    return hit;
+    if(t < EPSILON) {
+        return false;
+    }
+
+    vec3 point = pointOnRay(ray, t);
+    normal = normalize(point - sphere.center);
+    
+    return true;
 
 }
 
@@ -126,6 +86,7 @@ bool traceRay(Ray ray, inout float t, inout vec3 normal) {
     float minT;
 
     /* Do tests... etc */
+    /*
     for(int i = 0; i < meshes.length(); i++) {
         
         if(traceRayMesh(ray, meshes[i], t, normal) && t < minT && t >= EPSILON) {
@@ -134,6 +95,7 @@ bool traceRay(Ray ray, inout float t, inout vec3 normal) {
         }
 
     }
+    */
 
     if(hit) {
         t = minT;
@@ -141,11 +103,6 @@ bool traceRay(Ray ray, inout float t, inout vec3 normal) {
 
     return hit;
 
-}
-
-/* Get point on a ray */
-vec3 pointOnRay(Ray ray, float t) {
-    return ray.origin + ray.direction * t;
 }
 
 /* Random number generator; use time for some additional randomness between frames */
@@ -174,8 +131,18 @@ void main() {
     Ray ray;
     ray.direction = normalize(vec3(uv.x - 0.5, uv.y - 0.5, uFocalLength));
 
-    float n = random(uv);
-    vec4 color = vec4(n,n,n,1.0);
+    Sphere sphere;
+    sphere.center = vec3(0.5, 0.0, 5.0);
+    sphere.radius = 0.5;
+
+    vec4 color;
+    float t; vec3 n;
+    if(traceRaySphere(ray, sphere, t, n)) {
+        color = vec4(n.x, n.y, n.z, 1.0);
+    } else {
+        color = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+
     imageStore(outputTexture, storePos, color);
     
 }`;

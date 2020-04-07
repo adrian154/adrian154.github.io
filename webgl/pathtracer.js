@@ -1,6 +1,10 @@
 const OUTPUT_WIDTH = 512;
 const OUTPUT_HEIGHT = 512;
 
+const meshes = [
+    /* Meshes go here */
+];
+
 const init = function () {
 
     // set up canvas
@@ -38,8 +42,40 @@ const init = function () {
     const uFocalLength = context.getUniformLocation(computeProgram, "uFocalLength");
     const uMaxDepth = context.getUniformLocation(computeProgram, "uMaxDepth");
 
-    // put mesh data
-    /* ... */
+
+
+
+    /*
+    // put mesh data...
+
+    // first, face indices
+    const triangles = [];
+    let indexPos = 0;           // indexes are all in the same array so we need to update face indices
+
+    // add all faces to mesh 
+    for(let mesh of meshes) {
+        for(let i = 0; i < mesh.faces.length; i++) {
+            let face = mesh.faces[i];
+            
+            // offset faces so they point to the right vertices
+            face[0] += indexPos;
+            face[1] += indexPos;
+            face[2] += indexPos;
+
+            triangles = triangles.concat(mesh.face);
+        }
+        indexPos += mesh.faces.length;
+    }
+
+    // create and bind SSBO for triangles
+    const trianglesBuffer = new Int32Array(triangles);
+    const trianglesBufferID = context.createBuffer();
+    context.bindBuffer(context.SHADER_STORAGE_BUFFER, trianglesBufferID);
+    context.bufferData(context.SHADER_STORAGE_BUFFER, trianglesBuffer.length * 4, context.STATIC_DRAW);
+    context.bufferSubData(context.SHADER_STORAGE_BUFFER, 0, trianglesBuffer);
+    */
+
+
 
     // create texture for output and bind
     const texture = context.createTexture();
