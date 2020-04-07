@@ -37,11 +37,11 @@ struct Material {
 
 /* Buffers */
 layout (std430, binding = 1) readonly buffer Spheres {
-    Sphere spheres;
+    Sphere spheres[];
 }; 
 
-layout (std430, binding = 4) readonly buffer Materials {
-    Material materials;
+layout (std430, binding = 2) readonly buffer Materials {
+    Material materials[];
 };
 
 /* Get point on a ray */
@@ -86,16 +86,14 @@ bool traceRay(Ray ray, inout float t, inout vec3 normal) {
     float minT;
 
     /* Do tests... etc */
-    /*
-    for(int i = 0; i < meshes.length(); i++) {
+    for(int i = 0; i < spheres.length(); i++) {
         
-        if(traceRayMesh(ray, meshes[i], t, normal) && t < minT && t >= EPSILON) {
+        if(traceRaySphere(ray, spheres[i], t, normal) && t < minT) {
             minT = t;
             hit = true;
         }
 
     }
-    */
 
     if(hit) {
         t = minT;
@@ -137,11 +135,18 @@ void main() {
 
     vec4 color;
     float t; vec3 n;
-    if(traceRaySphere(ray, sphere, t, n)) {
+
+    /*
+    if(traceRay(ray, t, n)) {
         color = vec4(n.x, n.y, n.z, 1.0);
     } else {
         color = vec4(0.0, 0.0, 0.0, 1.0);
     }
+    */
+
+    t = float(spheres.length() * 255);
+    color = vec4(t, t, t, 1.0);
+
 
     imageStore(outputTexture, storePos, color);
     

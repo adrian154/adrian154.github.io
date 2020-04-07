@@ -1,9 +1,69 @@
 const OUTPUT_WIDTH = 512;
 const OUTPUT_HEIGHT = 512;
 
-const meshes = [
-    /* Meshes go here */
+const spheres = [
+    {
+        center: {
+            x: 0.5,
+            y: 0.75,
+            z: 3.0
+        },
+        radius: 0.8,
+        materialIndex: 0
+    }
 ];
+
+const createSphereBuffer = function(context, program) {
+
+    const sphereBuffer = new ArrayBuffer(spheres.length * 48);
+
+    // two ways to fill data
+    const sphereInt32Data = new Int32Array(sphereBuffer);
+    const sphereFloat32Data = new Float32Array(sphereBuffer);
+        
+    // On a GPU the sphere looks like:
+    // vec3 center          12 bytes    12
+    // (Padding)            4 bytes     16
+    // float radius         4 bytes     20
+    // (Padding)            12 bytes    32
+    // int materialIndex    4 bytes     36
+    // (Padding)            12 bytes    48
+    // 48 byte size
+
+    // size of Sphere in 4 byte chunks
+    const paddedSizex4 = 12;
+
+    for(let i = 0; i < spheres.length; i++) {
+
+        let sphere = spheres[i];
+
+        // center
+        sphereFloat32Data[i * paddedSizex4] = sphere.center.x;
+        sphereFloat32Data[i * paddedSizex4 + 1] = sphere.center.y;
+        sphereFloat32Data[i * paddedSizex4 + 2] = sphere.center.z;
+            
+        // padding (1x 4b)
+
+        // radius
+        sphereFloat32Data[i * paddedSizex4 + 4] = sphere.radius;
+
+        // padding (3x 4b)
+
+        // materialIndex
+        sphereInt32Data[i * paddedSizex4 + 8] = sphere.materialIndex;
+
+    }
+
+    const sphereBufferID = context.createBuffer();
+    context.bindBuffer(context.SHADER_STORAGE_BUFFER, sphereBufferID);
+    context.bufferData(context.SHADER_STORAGE_BUFFER, sphereBuffer, context.STATIC_DRAW);
+    context.bindBufferBase(context.SHADER_STORAGE_BUFFER, 0, sphereBufferID);
+
+    let index = context.getProgramResourceIndex(program, context.SHADER_STORAGE_BLOCK, "Spheres");
+    let bind = context.getProgramResource(program, context.SHADER_STORAGE_BLOCK, index, [context.BUFFER_BINDING])[0];
+    context.bindBufferBase(context.SHADER_STORAGE_BUFFER, bind, sphereBufferID);
+
+};
 
 const init = function () {
 
@@ -42,40 +102,8 @@ const init = function () {
     const uFocalLength = context.getUniformLocation(computeProgram, "uFocalLength");
     const uMaxDepth = context.getUniformLocation(computeProgram, "uMaxDepth");
 
-
-
-
-    /*
-    // put mesh data...
-
-    // first, face indices
-    const triangles = [];
-    let indexPos = 0;           // indexes are all in the same array so we need to update face indices
-
-    // add all faces to mesh 
-    for(let mesh of meshes) {
-        for(let i = 0; i < mesh.faces.length; i++) {
-            let face = mesh.faces[i];
-            
-            // offset faces so they point to the right vertices
-            face[0] += indexPos;
-            face[1] += indexPos;
-            face[2] += indexPos;
-
-            triangles = triangles.concat(mesh.face);
-        }
-        indexPos += mesh.faces.length;
-    }
-
-    // create and bind SSBO for triangles
-    const trianglesBuffer = new Int32Array(triangles);
-    const trianglesBufferID = context.createBuffer();
-    context.bindBuffer(context.SHADER_STORAGE_BUFFER, trianglesBufferID);
-    context.bufferData(context.SHADER_STORAGE_BUFFER, trianglesBuffer.length * 4, context.STATIC_DRAW);
-    context.bufferSubData(context.SHADER_STORAGE_BUFFER, 0, trianglesBuffer);
-    */
-
-
+    // attach sphere data
+    createSphereBuffer(context, computeProgram);
 
     // create texture for output and bind
     const texture = context.createTexture();
