@@ -13,6 +13,15 @@ const spheres = [
     }
 ];
 
+const bindBuffer = function(context, program, bufferID, layoutName) {
+
+    let index = context.getProgramResourceIndex(program, context.SHADER_STORAGE_BLOCK, layoutName);
+    let bind = context.getProgramResource(program, context.SHADER_STORAGE_BLOCK, index, [context.BUFFER_BINDING])[0];
+    
+    context.bindBufferBase(context.SHADER_STORAGE_BUFFER, bind, bufferID);
+    
+};
+
 const createSphereBuffer = function(context, program) {
 
     const sphereBuffer = new ArrayBuffer(spheres.length * 48);
@@ -21,13 +30,13 @@ const createSphereBuffer = function(context, program) {
     const sphereInt32Data = new Int32Array(sphereBuffer);
     const sphereFloat32Data = new Float32Array(sphereBuffer);
         
-    // On a GPU the sphere looks like: (WRONG!!!)
-    // float radius         4 bytes     0
-    // padding              12 bytes    1,2,3
-    // int materialIndex    4 bytes     4
-    // padding              12 bytes    5,6,7
-    // vec3 center          12 bytes    8,9,10
-    // padding              4 bytes     11
+    // On a GPU the sphere looks like:
+    // vec3 center          12 bytes
+    // padding              4 bytes
+    // float radius         4 bytes
+    // padding              12 bytes
+    // int materialIndex    4 bytes
+    // padding              12 bytes
 
     // size of Sphere in 4 byte chunks
     const paddedSizex4 = 12;
@@ -35,9 +44,7 @@ const createSphereBuffer = function(context, program) {
     for(let i = 0; i < spheres.length; i++) {
 
         let sphere = spheres[i];
-
-        // radius
-        sphereFloat32Data[i * paddedSizex4] = sphere.radius
+        let offset = i * paddedSizex4;
 
         // material index
         sphereInt32Data[i * paddedSizex4 + 4] = sphere.materialIndex;
@@ -49,14 +56,14 @@ const createSphereBuffer = function(context, program) {
 
     }
 
+    // Upload buffers to GPU
     const sphereBufferID = context.createBuffer();
     context.bindBuffer(context.SHADER_STORAGE_BUFFER, sphereBufferID);
     context.bufferData(context.SHADER_STORAGE_BUFFER, sphereBuffer, context.STATIC_DRAW);
     context.bindBufferBase(context.SHADER_STORAGE_BUFFER, 0, sphereBufferID);
 
-    let index = context.getProgramResourceIndex(program, context.SHADER_STORAGE_BLOCK, "Spheres");
-    let bind = context.getProgramResource(program, context.SHADER_STORAGE_BLOCK, index, [context.BUFFER_BINDING])[0];
-    context.bindBufferBase(context.SHADER_STORAGE_BUFFER, bind, sphereBufferID);
+    // Bind buffers to shader
+    bindBuffer(context, program, sphereBufferID, "Spheres");
 
 };
 
@@ -106,12 +113,12 @@ const init = function () {
     context.texStorage2D(context.TEXTURE_2D, 1, context.RGBA8, OUTPUT_WIDTH, OUTPUT_HEIGHT);   
     context.bindImageTexture(0, texture, 0, false, 0, context.WRITE_ONLY, context.RGBA8);
 
-    // create frame
+    // create framebuffer
     const frameBuffer = context.createFramebuffer();
     context.bindFramebuffer(context.READ_FRAMEBUFFER, frameBuffer);
     context.framebufferTexture2D(context.READ_FRAMEBUFFER, context.COLOR_ATTACHMENT0, context.TEXTURE_2D, texture, 0);
 
-    // execute ComputeShader
+    // animate
     context.useProgram(computeProgram);
 
     const animate = function() {

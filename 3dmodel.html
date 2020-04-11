@@ -1,0 +1,108 @@
+<html>
+    
+    <head>
+        
+        <title>Compact Object Specification</title>
+        
+        <style>
+body {
+    width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Segoe UI, Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    font-size: 2.0em;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+h3 {
+    font-size: 1.25em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #888888;
+}
+
+th {
+    padding: 0.7em;
+    background-color: #f5f5f5;
+}
+
+td {
+
+}
+        </style>
+
+    </head>
+    
+    <body>
+
+        <h1>Compact Object (COB) Format Specification</h1>
+
+        <h2>Introduction</h2>
+        <p>The Compact Object format, or COB, is a file format for 3D models.</p>
+
+        <h2>Definitions</h2>
+
+        <h3>Datatypes</h3>
+        <table>
+            <tr>
+                <th width="15%">Name</th>
+                <th width="15%">Size (bytes)</th>
+                <th width="70%">Description</th>
+            </tr>
+            <tr>
+                <th>Boolean</th>
+                <td>1</td>
+                <td>0 for true, 1 for false</td>
+            </tr>
+            <tr>
+                <th>Byte</th>
+                <td>1</td>
+                <td>Signed 8-bit two's complement integer (range of -128 to 127)</td>
+            </tr>
+            <tr>
+                <th>Unsigned Byte</th>
+                <td>1</td>
+                <td>Unsigned 8-bit integer (range of 0 to 255)</td>
+            </tr>
+            <tr>
+                <th>Short</th>
+                <td>2</td>
+                <td>Signed 16-bit two's complement integer (range of -32,768 and 32,767)</td>
+            </tr>
+            <tr>
+                <th>Unsigned Short</th>
+                <td>2</td>
+                <td>Unsigned 16-bit integer (range of 0 to 65535)</td>
+            </tr>
+            <tr>
+                <th>Int</th>
+                <td>4</td>
+                <td>Signed 32-bit two's complement integer (range of -2,147,483,648 to 2,147,483,647)</td>
+            </tr>
+            <tr>
+                <th>Unsigned Int</th>
+                <td>4</td>
+                <td>Unsigned 32-bit integer (range of 0 to 4,94,967,295)</td>
+            </tr>
+            <tr>
+                <th>Long</th>
+                <td>4</td>
+                <td>Signed 64-bit two's complement integer (range of -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807)</td>
+            </tr>
+        </table>
+
+    </body>
+
+</html>

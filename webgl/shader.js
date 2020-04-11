@@ -22,9 +22,9 @@ struct Ray {
 
 /* Sphere */
 struct Sphere {
+    vec3 center;
     float radius;
     int materialIndex;
-    vec3 center;
 };
 
 /* Material */
@@ -129,14 +129,10 @@ void main() {
     Ray ray;
     ray.direction = normalize(vec3(uv.x - 0.5, uv.y - 0.5, uFocalLength));
 
-    Sphere sphere;
-    sphere.center = vec3(0.5, 0.0, 5.0);
-    sphere.radius = 0.5;
-
     vec4 color;
-    float t; vec3 n;
 
     /*
+    float t; vec3 n;
     if(traceRay(ray, t, n)) {
         color = vec4(n.x, n.y, n.z, 1.0);
     } else {
@@ -144,9 +140,12 @@ void main() {
     }
     */
 
-    t = float(spheres.length() * 255);
-    color = vec4(t, t, t, 1.0);
-
+    // Temp - output ray color
+    if(spheres.length() == 0) {
+        color = vec4(1.0, 0.0, 0.0, 1.0);
+    } else {
+        color = vec4(ray.direction.x / 2.0 + 0.5, ray.direction.y / 2.0 + 0.5, ray.direction.z / 2.03 + 0.5, 1.0);
+    }
 
     imageStore(outputTexture, storePos, color);
     
