@@ -1,0 +1,270 @@
+<html>
+    
+    <head>
+        
+        <title>CEC-16</title>
+        
+        <style>
+body {
+    width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Segoe UI, Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    font-size: 2.0em;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+h3 {
+    font-size: 1.25em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #888888;
+}
+
+th {
+    padding: 0.7em;
+    background-color: #f5f5f5;
+}
+
+td {
+    padding: 0.3em;
+}
+        </style>
+
+    </head>
+    
+    <body>
+
+        <h1>CEC Specification</h1>
+
+        <h2>General Info</h2>
+        <p>The <b>Crappy Emulated CPU</b> (<b>CEC-16</b>) is a little-endian 16-bit architecture.</p>
+
+        <h2>Registers</h2>
+        <p>The CEC-16 has several general-purpose and special registers. The general-purpose registers are stored in a 128-bit register file. They can be accessed as 4 32-bit registers, 8 16-bit registers, or 16 8-bit registers.</p>
+        <table>
+            <tr>
+                <th>32-bit registers</th>
+                <td colspan="4">AB</td>
+                <td colspan="4">CD</td>
+                <td colspan="4">EF</td>
+                <td colspan="4">GH</td>
+            </tr>
+            <tr>
+                <th>16-bit registers</th>
+                <td colspan="2">A</td>
+                <td colspan="2">B</td>
+                <td colspan="2">C</td>
+                <td colspan="2">D</td>
+                <td colspan="2">E</td>
+                <td colspan="2">F</td>
+                <td colspan="2">G</td>
+                <td colspan="2">H</td>
+            </tr>
+            <tr>
+                <th>8-bit registers</th>
+                <td colspan="1">AX</td>
+                <td colspan="1">AY</td>
+                <td colspan="1">BX</td>
+                <td colspan="1">BY</td>
+                <td colspan="1">CX</td>
+                <td colspan="1">CY</td>
+                <td colspan="1">DX</td>
+                <td colspan="1">DY</td>
+                <td colspan="1">EX</td>
+                <td colspan="1">EY</td>
+                <td colspan="1">FX</td>
+                <td colspan="1">FY</td>
+                <td colspan="1">GX</td>
+                <td colspan="1">GY</td>
+                <td colspan="1">HX</td>
+                <td colspan="1">HY</td>
+            </tr>
+        </table>
+
+        <p>The 16-bit registers (A through H) are also referred to as the prime registers since they are the only valid operands for register-jumps.</p>
+
+        <p>The CEC-16 also has some special registers whose purposes are detailed in the following table.</p>
+
+        <table>
+            <tr>
+                <th width="10%">Mnemonic</th>
+                <th width="20%">Name</th>
+                <th width="10%">Size (bits)</th>
+                <th width="40%">Function</th>
+                <th width="10%">Access</th>
+            </tr>
+            <tr>
+                <th>IP</th>
+                <td>Instruction Pointer</td>
+                <td>16</td>
+                <td>Points to next instruction the CPU will execute.</td>
+                <td>Read-only</td>
+            </tr>
+            <tr>
+                <th>SP</th>
+                <td>Stack Pointer</td>
+                <td>16</td>
+                <td>Points to next item on stack.</td>
+                <td>Read-write</td>
+            </tr>
+            <tr>
+                <th>IR</th>
+                <td>Internal Register</td>
+                <td>8</td>
+                <td>Controls CPU extensions.</td>
+                <td>Read-write</td>
+            </tr>
+        </table>
+
+        <p>Attempting to write to IP will result in nothing happening.</p>
+
+        <p>There is also a FLAGS register; however, it cannot be directly accessed. Information about its state can be inferred through the conditional jumps, and individual flags can be set.</p>
+
+        <h2>Instruction Format</h2>
+        <p>Instructions have variable length depending on the type of data they contain.</p>
+        <p>The first byte in the opcode is split into two parts. The lower 6 bits specify the opcode, creating a total of 64 possible opcodes. The upper two bits determine the size of the operation. For simplicity, only operations on two data of the same size are supported. If the opcode does not correspond to a valid operation or the size is not valid for the given opcode, the processor will create a Bad Instruction exception.</p>
+        <p>The rest of the instruction's format depends on the opcode. However, operands are always encoded in the order that they occur in the instruction.</p>
+
+        <p>Immediate values are stored in little-endian order despite the internal bit order being big-endian in order to preserve the address of an element when it is "casted". This makes casting only relevant for higher-level languages as in assembly you can directly utilize instructions with different operation sizes on the same element.</p>
+
+        <p>Registers are encoded as single bytes according to this table.</p>
+        <table>
+            <tr>
+                <th>Register</th>
+                <th>Value</th>
+                <th>Register</th>
+                <th>Value</th>
+                <th>Register</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td rowspan="4">AB</td>
+                <td rowspan="4">0</td>
+                <td rowspan="2">A</td>
+                <td rowspan="2">0</td>
+                <td>AX</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>AY</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td rowspan="2">B</td>
+                <td rowspan="2">1</td>
+                <td>BX</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>BY</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td rowspan="4">CD</td>
+                <td rowspan="4">1</td>
+                <td rowspan="2">C</td>
+                <td rowspan="2">2</td>
+                <td>CX</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>CY</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td rowspan="2">D</td>
+                <td rowspan="2">3</td>
+                <td>DX</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>DY</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td rowspan="4">EF</td>
+                <td rowspan="4">2</td>
+                <td rowspan="2">E</td>
+                <td rowspan="2">4</td>
+                <td>EX</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>EY</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td rowspan="2">F</td>
+                <td rowspan="2">5</td>
+                <td>FX</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>FY</td>
+                <td>11</td>
+            </tr>
+            <tr>
+                <td rowspan="4">GH</td>
+                <td rowspan="4">3</td>
+                <td rowspan="2">G</td>
+                <td rowspan="2">6</td>
+                <td>GX</td>
+                <td>12</td>
+            </tr>
+            <tr>
+                <td>GY</td>
+                <td>13</td>
+            </tr>
+            <tr>
+                <td rowspan="2">H</td>
+                <td rowspan="2">7</td>
+                <td>HX</td>
+                <td>14</td>
+            </tr>
+            <tr>
+                <td>HY</td>
+                <td>15</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>IP</td>
+                <td>8</td>
+                <td>IR</td>
+                <td>16</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>SP</td>
+                <td>9</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <p>Many registers share the same encoding. However, no two registers of the same size share an encoding, meaning that only registers of the same size may be used in an operation.</p>
+
+        <h2>Instructions</h2>
+        <p>A detailed instruction reference for the CEC-16 can be found <a href="cec16_instructions.html">here</a>.</p>
+
+        <h2>Execution Cycle</h2>
+
+        <h2>Interrupts</h2>
+
+    </body>
+
+</html>

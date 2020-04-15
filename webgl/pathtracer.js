@@ -30,38 +30,8 @@ const createSphereBuffer = function(context, program) {
     const sphereInt32Data = new Int32Array(sphereBuffer);
     const sphereFloat32Data = new Float32Array(sphereBuffer);
         
-    // On a GPU the sphere looks like:
-    // vec3 center          12 bytes
-    // padding              4 bytes
-    // float radius         4 bytes
-    // padding              12 bytes
-    // int materialIndex    4 bytes
-    // padding              12 bytes
-
-    // size of Sphere in 4 byte chunks
-    const paddedSizex4 = 12;
-
-    for(let i = 0; i < spheres.length; i++) {
-
-        let sphere = spheres[i];
-        let offset = i * paddedSizex4;
-
-        // material index
-        sphereInt32Data[i * paddedSizex4 + 4] = sphere.materialIndex;
-
-        // center
-        sphereFloat32Data[i * paddedSizex4 + 8] = sphere.materialIndex;
-        sphereFloat32Data[i * paddedSizex4 + 9] = sphere.materialIndex;
-        sphereFloat32Data[i * paddedSizex4 + 10] = sphere.materialIndex;
-
-    }
-
-    // Upload buffers to GPU
-    const sphereBufferID = context.createBuffer();
-    context.bindBuffer(context.SHADER_STORAGE_BUFFER, sphereBufferID);
-    context.bufferData(context.SHADER_STORAGE_BUFFER, sphereBuffer, context.STATIC_DRAW);
-    context.bindBufferBase(context.SHADER_STORAGE_BUFFER, 0, sphereBufferID);
-
+    // FILL BUFFER CODE GOES HERE
+    
     // Bind buffers to shader
     bindBuffer(context, program, sphereBufferID, "Spheres");
 
