@@ -1,0 +1,37 @@
+<html>
+
+    <head>
+        <title></title>
+        <style>
+
+body {
+    width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5.0em;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+p {
+    font-size: 1.1em;
+}
+
+        </style>
+    </head>
+
+    <body>
+
+        <h2>Basics 1: Light</h2>
+        <p>Ideally, the most realistic way to render a scene would be to simulate the motion of each individual photon in the scene. However, this isn't feasible. An ideal 60-watt lightbulb emits an enormous amount of photons, on the order of 10<sup>20</sup> photons. If you were to simulate all of those photons, the scene would take a stupidly long time to render.</p>
+
+        <p>The biggest issue is that the vast majority of the photons in the scene never interact with the camera. There's a simple solution: start from the camera. This way, only light rays that ultimately contribute to the image will be considered. This brings us to our camera model.</p>
+
+        <h2>Basics 2: Camera</h2>
+        <img src="camera_model_example.png">
+        <p></p>
+
+        <p>(There's no <i>Basics 3: Action</i>. Instead, let's do some math.)</p>
+
+    </body>
+
+</html>

@@ -84,14 +84,14 @@ td {
                 <th>0x03</th>
                 <td>LOAD</td>
                 <td>Reg(X), Reg(Y)</td>
-                <td>Puts value in memory location specified by register X into register Y.</td>
+                <td>Puts value in memory location pointed to by register X into register Y.</td>
                 <td></td>
             </tr>
             <tr>
                 <th>0x04</th>
                 <td>STORE</td>
                 <td>Reg(X), Reg(Y)</td>
-                <td>Stores value in register X into memory location specified by register Y.</td>
+                <td>Stores value in register X into memory location pointed to by register Y.</td>
                 <td></td>
             </tr>
             <tr>
@@ -189,14 +189,85 @@ td {
                 <th>0x12</th>
                 <td>RET</td>
                 <td>Reg(X)</td>
-                <td>Pops 16-bit value from the stack into IP.</td>
+                <td>Pops 16-bit value from the stack (see POP(Reg)) into IP.</td>
                 <td>Disregards operation size since it has no operands.</td>
             </tr>
             <tr>
                 <th>0x13</th>
                 <td>PUSH</td>
                 <td>Reg(X)</td>
+                <td>Subtracts the size of the operation from SP, and stores the value in register X in memory at the location pointed to by the new SP.</td>
+                <td>Not aware of stack alignment and padding. The programmer must keep track of what data is on the stack at all times.</td>
+            </tr>
+            <tr>
+                <th>0x14</th>
+                <td>PUSH</td>
+                <td>Imm(I)</td>
+                <td>Immediate version of PUSH(Reg).</td>
                 <td></td>
+            </tr>
+            <tr>
+                <th>0x15</th>
+                <td>POP</td>
+                <td>Reg(X)</td>
+                <td>Stores the value in memory at the location pointed to by SP into register X, and adds the size of the operation to SP.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>0x16</th>
+                <td>AND</td>
+                <td>Reg(X), Reg(Y), Reg(Z)</td>
+                <td>Stores the bitwise AND of the values in register X and Y into register Z.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>0x17</th>
+                <td>OR</td>
+                <td>Reg(X), Reg(Y), Reg(Z)</td>
+                <td>Stores the bitwise OR of the values in register X and Y into register Z.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>0x18</th>
+                <td>NOT</td>
+                <td>Reg(X), Reg(Y)</td>
+                <td>Stores the bitwise NOT of the value in register X into register Y.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>0x19</th>
+                <td>XOR</td>
+                <td>Reg(X), Reg(Y), Reg(Z)</td>
+                <td>Stores the bitwise XOR of the values in register X and register Y into register Z.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>0x1A</th>
+                <td>LSR</td>
+                <td>Reg(X), Reg(Y), Reg(Z)</td>
+                <td>Stores the value in register X logically shifted right by Y bits into register Z.</td>
+                <td>Does not preserve sign bit.</td>
+            </tr>
+            <tr>
+                <th>0x1B</th>
+                <td>LSR</td>
+                <td>Reg(X), Imm(I), Reg(Y)</td>
+                <td>Stores the value in register X logically shifted right by I bits into register Y.</td>
+                <td>Does not preserve sign bit.</td>
+            </tr>
+            <tr>
+                <th>0x1C</th>
+                <td>LSL</td>
+                <td>Reg(X), Reg(Y), Reg(Z)</td>
+                <td>Same as LSR(Reg,Reg,Reg), but shifts left.</td>
+                <td>Does not preserve sign bit.</td>
+            </tr>
+            <tr>
+                <th>0x1D</th>
+                <td>LSL</td>
+                <td>Reg(X), Imm(I), Reg(Y)</td>
+                <td>Same as LSR(Reg,Imm,Reg) but shifts right.</td>
+                <td>Does not preserve sign bit.</td>
             </tr>
         </table>
 

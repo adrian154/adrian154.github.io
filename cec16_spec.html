@@ -54,6 +54,8 @@ td {
 
         <h2>Registers</h2>
         <p>The CEC-16 has several general-purpose and special registers. The general-purpose registers are stored in a 128-bit register file. They can be accessed as 4 32-bit registers, 8 16-bit registers, or 16 8-bit registers.</p>
+        <p>Data in registers, unlike  memory, is stored in big-endian order.</p>
+
         <table>
             <tr>
                 <th>32-bit registers</th>
@@ -135,7 +137,28 @@ td {
 
         <h2>Instruction Format</h2>
         <p>Instructions have variable length depending on the type of data they contain.</p>
-        <p>The first byte in the opcode is split into two parts. The lower 6 bits specify the opcode, creating a total of 64 possible opcodes. The upper two bits determine the size of the operation. For simplicity, only operations on two data of the same size are supported. If the opcode does not correspond to a valid operation or the size is not valid for the given opcode, the processor will create a Bad Instruction exception.</p>
+        <p>The first byte in the opcode is split into two parts. The lower 6 bits specify the opcode, creating a total of 64 possible opcodes. The upper two bits determine the size of the operation:</p>
+        
+        <table style="width: 30%">
+            <tr>
+                <th>Bits</th>
+                <th>Operation Size</th>
+            </tr>
+            <tr>
+                <td>00</td>
+                <td>8-bit</td>
+            </tr>
+            <tr>
+                <td>01</td>
+                <td>16-bit</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>32-bit</td>
+            </tr>
+        </table>
+
+        </p>For simplicity, only operations on two data of the same size are supported. If the opcode does not correspond to a valid operation or the size is not valid for the given opcode, the processor will create a Bad Instruction exception.</p>
         <p>The rest of the instruction's format depends on the opcode. However, operands are always encoded in the order that they occur in the instruction.</p>
 
         <p>Immediate values are stored in little-endian order despite the internal bit order being big-endian in order to preserve the address of an element when it is "casted". This makes casting only relevant for higher-level languages as in assembly you can directly utilize instructions with different operation sizes on the same element.</p>
@@ -151,105 +174,105 @@ td {
                 <th>Value</th>
             </tr>
             <tr>
-                <td rowspan="4">AB</td>
+                <th rowspan="4">AB</th>
                 <td rowspan="4">0</td>
-                <td rowspan="2">A</td>
+                <th rowspan="2">A</th>
                 <td rowspan="2">0</td>
-                <td>AX</td>
+                <th>AX</th>
                 <td>0</td>
             </tr>
             <tr>
-                <td>AY</td>
+                <th>AY</th>
                 <td>1</td>
             </tr>
             <tr>
-                <td rowspan="2">B</td>
+                <th rowspan="2">B</th>
                 <td rowspan="2">1</td>
-                <td>BX</td>
+                <th>BX</th>
                 <td>2</td>
             </tr>
             <tr>
-                <td>BY</td>
+                <th>BY</th>
                 <td>3</td>
             </tr>
             <tr>
-                <td rowspan="4">CD</td>
+                <th rowspan="4">CD</th>
                 <td rowspan="4">1</td>
-                <td rowspan="2">C</td>
+                <th rowspan="2">C</th>
                 <td rowspan="2">2</td>
-                <td>CX</td>
+                <th>CX</th>
                 <td>4</td>
             </tr>
             <tr>
-                <td>CY</td>
+                <th>CY</th>
                 <td>5</td>
             </tr>
             <tr>
-                <td rowspan="2">D</td>
+                <th rowspan="2">D</th>
                 <td rowspan="2">3</td>
-                <td>DX</td>
+                <th>DX</th>
                 <td>6</td>
             </tr>
             <tr>
-                <td>DY</td>
+                <th>DY</th>
                 <td>7</td>
             </tr>
             <tr>
-                <td rowspan="4">EF</td>
+                <th rowspan="4">EF</th>
                 <td rowspan="4">2</td>
-                <td rowspan="2">E</td>
+                <th rowspan="2">E</th>
                 <td rowspan="2">4</td>
-                <td>EX</td>
+                <th>EX</th>
                 <td>8</td>
             </tr>
             <tr>
-                <td>EY</td>
+                <th>EY</th>
                 <td>9</td>
             </tr>
             <tr>
-                <td rowspan="2">F</td>
+                <th rowspan="2">F</th>
                 <td rowspan="2">5</td>
-                <td>FX</td>
+                <th>FX</th>
                 <td>10</td>
             </tr>
             <tr>
-                <td>FY</td>
+                <th>FY</th>
                 <td>11</td>
             </tr>
             <tr>
-                <td rowspan="4">GH</td>
+                <th rowspan="4">GH</th>
                 <td rowspan="4">3</td>
-                <td rowspan="2">G</td>
+                <th rowspan="2">G</th>
                 <td rowspan="2">6</td>
-                <td>GX</td>
+                <th>GX</th>
                 <td>12</td>
             </tr>
             <tr>
-                <td>GY</td>
+                <th>GY</th>
                 <td>13</td>
             </tr>
             <tr>
-                <td rowspan="2">H</td>
+                <th rowspan="2">H</th>
                 <td rowspan="2">7</td>
-                <td>HX</td>
+                <th>HX</th>
                 <td>14</td>
             </tr>
             <tr>
-                <td>HY</td>
+                <th>HY</th>
                 <td>15</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
-                <td>IP</td>
+                <th>IP</th>
                 <td>8</td>
-                <td>IR</td>
+                <th>IR</th>
                 <td>16</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
-                <td>SP</td>
+                <th>SP</th>
                 <td>9</td>
                 <td></td>
                 <td></td>
