@@ -1,0 +1,54 @@
+#document-body {
+    display: block;
+
+    width: 50%;
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.0em;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#header {
+    width: 100%;
+}
+
+#header img {
+    width: 100%;
+}
+
+#bottom {
+    display: flex;
+    justify-content: space-between;
+    
+    margin-top: 1.0em;
+}
+
+#navbar {
+    width: 20%;
+    height: 10.0em;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 5%;
+    background-color: #f6f6f6;
+    padding: 1.0em;
+}
+
+#main-content {
+    width: 70%;
+}
+
+.comment {
+    padding: 0.5em;
+}
+
+.profile-picture {
+    width: 4.0em;
+    height: 4.0em;
+}
+
+td {
+    padding: 0.2em;
+    vertical-align: top;
+}
