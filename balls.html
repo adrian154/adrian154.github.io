@@ -1,0 +1,140 @@
+<html>
+    <head>
+        <title>Particles Test</title>
+    </head>
+    <body>
+        <canvas id="output" width="512" height="512"></canvas>
+        <button onclick="resetParticles()">Reset Particles</button>
+        <script>
+
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
+
+// Simulation constants
+const NUM_PARTICLES = 10;
+const PARTICLE_RADIUS = 5;
+const PARTICLE_RADIUS_SQUARED = PARTICLE_RADIUS * PARTICLE_RADIUS;
+
+// Simulation "constants" (adjustable)
+let DT = 1 / 60; // default is 60fps ("real time")
+
+// Physical "constants" (can be dynamically adjusted)
+let GRAVITY = -900;
+let BORDER_BOUNCINESS = 0.75;        // "coefficient of restitution" for boundary
+
+let particles;
+
+const init = function() {
+    particles = new Array(NUM_PARTICLES);
+    resetParticles();
+};
+
+const resetParticles = function() {
+    for(let i = 0; i < particles.length; i++) {
+        particles[i] = {
+            pos: {
+                x: Math.random() * 100,
+                y: Math.random() * 100 + 200
+            },
+            vel: {
+                x: Math.random() * 3,
+                y: Math.random() * 3
+            }
+        };
+    }
+};
+
+const draw = function() {
+
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#ffffff";
+    for(let i = 0; i < particles.length; i++) {
+        let particle = particles[i];
+        ctx.beginPath();
+        ctx.arc(particle.pos.x, canvas.height - particle.pos.y, PARTICLE_RADIUS, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    ctx.fillStyle = "#00ff00";
+    ctx.font = "16px Arial";
+    ctx.fillText(Number(DT / (1 / 60)).toFixed(2) + "x", 2, 16);
+
+};
+
+const step = function() {
+
+    // Get collisions
+    let collisions = [];
+    for(let i = 0; i < particles.length - 1; i++) {
+        let particle0 = particles[i];
+        for(let j = i + 1; j < particles.length; j++) {
+            let particle1 = particles[j];
+            let dx = particle1.pos.x - particle0.pos.x;
+            let dy = particle1.pos.y - particle0.pos.y;
+            if(dx * dx + dy * dy < PARTICLE_RADIUS * PARTICLE_RADIUS * 4) {
+                collisions.push({
+                    index0: i,
+                    index1: j
+                });
+            }
+        }
+    }
+    
+    // Loop through collisions
+    for(let collision of collisions) {
+        let particle0 = particles[collision.index0];
+        let particle1 = particles[collision.index1];
+        let v0 = Math.sqrt(particle0.vel.x * particle0.vel.x + particle0.vel.y * particle0.vel.y);
+        let v1 = Math.sqrt(particle1.vel.x * particle1.vel.x + particle1.vel.y * particle1.vel.y);
+        let dx = particle1.pos.x - particle0.pos.x;
+        let dy = particle1.pos.y - particle0.pos.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        particle0.vel.x = -v1 * dx / dist;
+        particle0.vel.y = -v1 * dy / dist;
+        particle1.vel.x = v0 * dx / dist;
+        particle1.vel.y = v0 * dy / dist;
+    }
+
+    // Update each particle individually
+    for(let i  = 0; i < particles.length; i++) {
+        let particle = particles[i];
+
+        particle.vel.y += GRAVITY * DT;
+
+        particle.pos.x += particle.vel.x * DT;
+        particle.pos.y += particle.vel.y * DT;
+    
+        // Keep particles in boundaries 
+        if(particle.pos.y < PARTICLE_RADIUS) {
+            particle.pos.y = PARTICLE_RADIUS;
+            particle.vel.y *= -BORDER_BOUNCINESS;
+        }
+
+        if(particle.pos.x < PARTICLE_RADIUS) {
+            particle.pos.x = PARTICLE_RADIUS;
+            particle.vel.x *= -BORDER_BOUNCINESS;
+        }
+
+        if(particle.pos.x > canvas.width - PARTICLE_RADIUS) {
+            particle.pos.x = canvas.width - PARTICLE_RADIUS;
+            particle.vel.x *= -BORDER_BOUNCINESS;
+        }
+
+    }
+
+};
+
+const run = function() {
+    draw();
+    step();
+    requestAnimationFrame(run);
+};
+
+init();
+run();
+        </script>
+    </body>
+</html>
