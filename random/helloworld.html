@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <pre><code id="t"></code></pre>
+        <script>
+let s=()=>{let r="";for(let i=0;i<Math.floor(Math.random()*3)+1;i++)r+=[" ","\n","\t"][Math.floor(Math.random()*3)];return r;};let k=["int","main","(","int","argc",",","char","**","argv",")","{","printf","(","\"Hello World\\n\"",")",";","return","0",";","}"];let x=()=>{let r="";for(let w of k)r+=w+s();return r;};
+document.getElementById("t").innerHTML=x();
+        </script>
+    </body>
+</html>
