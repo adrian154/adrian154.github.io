@@ -38,8 +38,12 @@
 			
 			<p>A single-precision <code>float</code> has the following internal structure:</p>
 			<ul>
-				<li></li>
+				<li><b>Bit 31 (MSB):</b> Sign bit</li>
+				<li><b>Bits 30-23 (8 bits):</b> Exponent</li>
+				<li><b>Bits 22-0 (23 bits):</b> Fraction (also referred to as the <i>mantissa</i>)</li>
 			</ul>
+
+			<p>The exponent is represented using a scheme called <i>offset-binary</i> encoding. An exponent of 0 is encoded as 127, with a minimum exponent of -126 and a maximum exponent of 127. To convert the encoded exponent to the actual exponent, subtract 127 from it.</p>
 
 		</div>
 	</body>
