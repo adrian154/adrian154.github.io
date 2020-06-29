@@ -1,0 +1,46 @@
+<html>
+	<head>
+        <link rel="stylesheet" href="artc_style.css">
+        <title>Fixed and Floating Point</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=AM_CHTML"></script>
+	</head>
+	
+	<body>
+		<div class="bodyContainer">
+
+            <h1 class="center">Fixed and Floating Point</h1>
+
+			<p><b>How do you store a real number using only bits?</b> There are two common approaches.</p>
+
+			<h2 class="center">Fixed-Point Numbers</h2>
+
+			<p>The simplest approach to storing a real number in bits is to simply store a <i>multiple</i> of the value. For instance, if I wanted to store a number to 3 digits of precision, I would store the real number multiplied by 10<sup>3</sup> (1000) in an integer, which can be represented exactly. 6.578 would be stored as 6,578.</p>
+
+			<p>Operations on fixed-point numbers are quite simple. Addition and subtraction are identical to their integer counterparts. Multiplication does need one small modification, though. Let's try to multiply two numbers, 6.578 &times; 19.266, which would be represented as 6,578 and 19,266 respectively. For reference, the actual result is 126.731748, which would be represented as 126,731 in our system. However, when you try to multiply 6,578 and 19,266, you get 126,731,748. This is clearly wrong. What gives? This can be explained with math:</p>
+			
+			<p>`text(Naive: ) 6578 xx 19266 xx 10^-3`</p>
+			<p>`text(Correct: ) (6578 xx 10^-3) xx (19266 xx 10^-3)`</p>
+			<p>`= (6578 xx 19266 xx 10^-3) xx 10^-3`</p>
+			
+			<p>The outer multiplication by 10<sup>-3</sup> in both examples is to represent the conversion to the actual represented value, which would probably be done during the display of the actual values. However, the second equation demonstrates that you actually have to "shift" the result right 3 digits to achieve an accurate result.</p>
+			
+			<p>Aside from a minor modification for multiplication, fixed-point is not too far from plain old integers. In practice, most fixed-point systems use base-2 instead of base-10 since this allows the multiplication "shift" to be done by simply bitshifting the value to the right, which can be accomplished quickly in hardware.</p>
+			
+			<p>Fixed-point representations are easy to implement and understand, and their performance is fairly high. However, their precision is highly limited. More bits dedicated to storing the decimal part of a number means fewer bits to store the actual part, meaning that the range of numbers that a fixed-point datatype can represent is usually quite small.</p>
+			
+			<p>The main use case for fixed-point numbers is devices which lack floating point number support. Since fixed-point numbers can be implemented on any architecture with support for integer operations, they are a popular choice for many embedded systems that do not contain an FPU.</p>
+			
+			<h1 class="center">Floating-Point Numbers</h1>
+			
+			<p>While discussing fixed-point numbers, we fixed the number of digits after the point to a fixed constant, 3, hence the name "fixed point". However, what if we lifted this restriction by storing the number of digits after the point (the "exponent") in the number itself? This representation is called floating-point.</p>
+			
+			<p>As it turns out, floating-point representations have been standardized by <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754</a>, probably since floating point calculations (generally done in hardware) are not as portable as fixed-point. IEEE 754 is used almost universally. The standard defines two main types of floating-point numbers: <b>single precision</b> and <b>double precision</b>, which are 32 and 64 bits wide, respectively. They are also referred to as <code>float</code> and <code>double</code> in C. This nomenclature has since spread from C to C++, C#, Java, and a plethora of other languages. I will be using it in this article.</p>
+			
+			<p>A single-precision <code>float</code> has the following internal structure:</p>
+			<ul>
+				<li></li>
+			</ul>
+
+		</div>
+	</body>
+</html>
