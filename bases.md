@@ -91,7 +91,7 @@ Here's how to count in binary:
 1111
 ```
 
-Notice the common pattern: the number system is defined by how many digits it has. We call this the *base*. Most of us count in base 10 nowadays, but computers count in base 2 for reasons that I will explain in a moment.
+Notice the common pattern: the number system is defined by how many digits it has. We call this the *base*. Most of us count in base 10 nowadays. Computers count in base 2 since they store all data as pulses of electricity, and base 2 works perfectly for that.
 
 ## A More Civilized Way.
 
