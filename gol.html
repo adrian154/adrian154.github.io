@@ -1,0 +1,122 @@
+<html>
+	<body>
+		<canvas id="output"></canvas>
+		<p id="message"></p>
+		<script>
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
+const message = document.getElementById("message");
+
+// Parse URL
+const url = new URL(window.location.href);
+
+const bornRule = url.searchParams.get("b");
+const surviveRule = url.searchParams.get("s");
+
+// Default CGOL rules
+let born = [3];
+let survive = [2, 3];
+
+if(bornRule !== null && surviveRule !== null) {
+	born = bornRule.split("").map(str => parseInt(str));
+	survive = surviveRule.split("").map(str => parseInt(str));
+}
+
+const CELL_SIZE = 2;
+const WIDTH = 256;
+const HEIGHT = 256;
+const INIT_DENSITY = 0.5;
+
+canvas.width = WIDTH * CELL_SIZE;
+canvas.height = HEIGHT * CELL_SIZE;
+
+const make2DArr = function(xSize, ySize) {
+	let result = new Array(xSize);
+	for(let x = 0; x < xSize; x++) {
+		result[x] = new Array(ySize);
+	}
+	return result;
+}
+
+// Double-buffer board 
+const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH * HEIGHT)];
+let which = 0;
+
+const reset = function() {
+
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+			board[which][x][y] = Math.random() > INIT_DENSITY ? 1 : 0;
+		}
+	}
+
+};
+
+const step = function() {
+		
+	let next = which == 1 ? 0 : 1;
+
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+		
+			let neighbors = 0;
+			for(let dx = -1; dx <= 1; dx++) {
+				for(let dy = -1; dy <= 1; dy++) {
+					if(dx == 0 && dy == 0) continue;
+					neighbors += board[which][(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT];
+				}	
+			}
+
+			// Die
+			board[next][x][y] = 0;
+
+			// Survive
+			if(survive.indexOf(neighbors) >= 0) {
+				board[next][x][y] = board[which][x][y];
+			}
+
+			// Born
+			if(born.indexOf(neighbors) >= 0) {
+				board[next][x][y] = 1;
+			}
+			
+		}
+	}
+
+	which = next;
+
+};
+
+const draw = function() {
+
+	ctx.fillStyle = "black";
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+			if(board[which][x][y] == 1) {
+				ctx.fillRect(
+					x * CELL_SIZE,
+					y * CELL_SIZE,
+					CELL_SIZE,
+					CELL_SIZE
+				);
+			}
+		}
+	}
+
+};
+
+const run = function() {
+
+	draw();
+	step();
+	requestAnimationFrame(run);
+
+};
+
+reset();
+run();
+		</script>
+	</body>
+</html>
