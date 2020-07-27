@@ -1,9 +1,22 @@
-<html>
+﻿<html>
+	 <head> 
+		 <stlye>
+			 html {
+  				background-color: black; 
+			 }
+
+			 #output {
+   				background-color: white;
+			 }
+	 
+		 </style>
+	</head>
 	<body>
 		<canvas id="output"></canvas>
-		<p id="message"></p>
-		<script>
-const canvas = document.getElementById("output");
+			<p id="message"></p>
+		
+<script>
+﻿const canvas = document.getElementById("output");
 const ctx = canvas.getContext("2d");
 const message = document.getElementById("message");
 
@@ -117,6 +130,7 @@ const run = function() {
 
 reset();
 run();
-		</script>
+</script>
+		
 	</body>
 </html>
