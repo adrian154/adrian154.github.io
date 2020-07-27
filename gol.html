@@ -6,6 +6,7 @@
 		
 		<textarea id="pattern" cols="60" rows="10"></textarea><br><br>
 		<button onclick="putPattern()">Use Pattern</button>
+		<pre id="link"></pre>
 
 		<script>
 const canvas = document.getElementById("output");
@@ -13,6 +14,7 @@ const ctx = canvas.getContext("2d");
 
 const message = document.getElementById("message");
 const patternField = document.getElementById("pattern");
+const link = document.getElementById("link");
 
 // Parse URL
 const url = new URL(window.location.href);
@@ -28,7 +30,6 @@ if(bornRule !== null && surviveRule !== null) {
 	born = bornRule.split("").map(str => parseInt(str));
 	survive = surviveRule.split("").map(str => parseInt(str));
 }
-
 
 let initDensity = 0.5;
 let pInitDensity = url.searchParams.get("density");
@@ -66,12 +67,21 @@ const reset = function() {
 
 };
 
-const initRand = function() {
+const init = function() {
 
-	for(let x = 0; x < WIDTH; x++) {
-		for(let y = 0; y < HEIGHT; y++) {
-			board[which][x][y] = Math.random() < initDensity ? 1 : 0;
+	if(url.searchParams.get("pattern") != null) {
+		
+		reset();
+		loadPattern(url.searchParams.get("pattern"));
+
+	} else {
+
+		for(let x = 0; x < WIDTH; x++) {
+			for(let y = 0; y < HEIGHT; y++) {
+				board[which][x][y] = Math.random() < initDensity ? 1 : 0;
+			}
 		}
+
 	}
 
 };
@@ -144,8 +154,15 @@ const run = function() {
 const putPattern = function() {
 
 	reset();
+	loadPattern(patternField.value);
+	
+	url.searchParams.set("pattern", patternField.value);
+	document.getElementById("link").innerHTML = url;
 
-	let pattern = patternField.value;
+};
+
+const loadPattern = function(pattern) {
+
 	let lines = pattern.split("\n");
 
 	let pWidth = lines[0].length;
@@ -160,9 +177,9 @@ const putPattern = function() {
 		}
 	}
 
-};
+}
 
-initRand();
+init();
 run();
 		</script>
 	</body>
