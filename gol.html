@@ -11,8 +11,8 @@ const message = document.getElementById("message");
 // Parse URL
 const url = new URL(window.location.href);
 
-const bornRule = url.searchParams.get("b");
-const surviveRule = url.searchParams.get("s");
+let bornRule = url.searchParams.get("b");
+let surviveRule = url.searchParams.get("s");
 
 // Default CGOL rules
 let born = [3];
@@ -26,7 +26,13 @@ if(bornRule !== null && surviveRule !== null) {
 const CELL_SIZE = 2;
 const WIDTH = 256;
 const HEIGHT = 256;
-const INIT_DENSITY = 0.5;
+
+
+let initDensity = 0.5;
+let pInitDensity = url.searchParams.get("density");
+if(pInitDensity !== null) {
+	initDensity = parseFloat(pInitDensity);
+}
 
 canvas.width = WIDTH * CELL_SIZE;
 canvas.height = HEIGHT * CELL_SIZE;
@@ -47,7 +53,7 @@ const reset = function() {
 
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
-			board[which][x][y] = Math.random() > INIT_DENSITY ? 1 : 0;
+			board[which][x][y] = Math.random() < initDensity ? 1 : 0;
 		}
 	}
 
@@ -112,7 +118,9 @@ const run = function() {
 
 	draw();
 	step();
-	requestAnimationFrame(run);
+	setTimeout(function() {
+		requestAnimationFrame(run)
+	}, 1000 / 60);
 
 };
 
