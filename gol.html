@@ -3,10 +3,16 @@
 		<canvas id="output"></canvas>
 		<p id="message"></p>
 		<p>This widget is open source! Check it out <a href="https://github.com/adrian154/adrian154.github.io/blob/master/gol.html">here</a> on GitHub.</p>
+		
+		<textarea id="pattern" cols="60" rows="10"></textarea><br><br>
+		<button onclick="putPattern()">Use Pattern</button>
+
 		<script>
 const canvas = document.getElementById("output");
 const ctx = canvas.getContext("2d");
+
 const message = document.getElementById("message");
+const patternField = document.getElementById("pattern");
 
 // Parse URL
 const url = new URL(window.location.href);
@@ -23,16 +29,17 @@ if(bornRule !== null && surviveRule !== null) {
 	survive = surviveRule.split("").map(str => parseInt(str));
 }
 
-const CELL_SIZE = 2;
-const WIDTH = 256;
-const HEIGHT = 256;
-
 
 let initDensity = 0.5;
 let pInitDensity = url.searchParams.get("density");
 if(pInitDensity !== null) {
 	initDensity = parseFloat(pInitDensity);
 }
+
+// Other constants
+const CELL_SIZE = 2;
+const WIDTH = 256;
+const HEIGHT = 256;
 
 canvas.width = WIDTH * CELL_SIZE;
 canvas.height = HEIGHT * CELL_SIZE;
@@ -50,6 +57,16 @@ const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH * HEIGHT)];
 let which = 0;
 
 const reset = function() {
+
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+			board[which][x][y] = 0;
+		}
+	}	
+
+};
+
+const initRand = function() {
 
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
@@ -96,9 +113,11 @@ const step = function() {
 
 const draw = function() {
 
+	ctx.fillStyle = "#fffae3";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 	ctx.fillStyle = "black";
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	
+
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
 			if(board[which][x][y] == 1) {
@@ -118,13 +137,32 @@ const run = function() {
 
 	draw();
 	step();
-	setTimeout(function() {
-		requestAnimationFrame(run)
-	}, 1000 / 60);
+	setTimeout(() => {requestAnimationFrame(run);}, 30);
 
 };
 
-reset();
+const putPattern = function() {
+
+	reset();
+
+	let pattern = patternField.value;
+	let lines = pattern.split("\n");
+
+	let pWidth = lines[0].length;
+	let pHeight = lines.length;
+
+	let xMargin = Math.floor((WIDTH - pWidth) / 2);
+	let yMargin = Math.floor((HEIGHT - pHeight) / 2);
+
+	for(let x = 0; x < pWidth; x++) {
+		for(let y = 0; y < pHeight; y++) {
+			board[which][x + xMargin][y + yMargin] = lines[y][x] != '.' ? 1 : 0;
+		}
+	}
+
+};
+
+initRand();
 run();
 		</script>
 	</body>
