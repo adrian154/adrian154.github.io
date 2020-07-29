@@ -1,0 +1,187 @@
+<html>
+	<head>
+        <link rel="stylesheet" href="artc_style.css">
+        <title>What's at NULL?</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=AM_CHTML"></script>
+	</head>
+	
+	<body>
+		<div class="bodyContainer">
+
+            <h1 class="center">What's at NULL?</h1>
+
+			<p>If you've ever programmed in a low-level language like C (or any language that deals with the concept of pointers or references, as a matter of fact) you probably understand the concept of NULL: a special value for pointers that exist but don't point to anything meaningful. But what does NULL even mean?</p>
+			
+			<p>I'll be talking about things in the context of C as it seems to be the lingua franca of low-level programming.</p>
+
+			<h2 class="center">The Madness Begins</h2>
+			<p>What is the value of NULL? Let's find out.</p>
+
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(int argc, char **argv) {
+	printf("NULL is %d\n", NULL);
+	return 0;
+}</code></pre>
+
+			<p>When compiled on any sane compiler, you will get an error about type conversion since NULL is a <code>void *</code> (it's for pointers, after all) but <code>%d</code> expects some sort of number. Pay no mind to the compiler. We won't need type safety where we're going.</p>
+
+			<p>Running this program yields:</p>
+	
+<pre><code>NULL is 0</code></pre>
+
+			<p>Looks like our suspicions were confirmed. So what's in the memory at zero? Let's test this out.</p>
+
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(int argc, char **argv) {
+		int *ptr = (int *)0;
+		printf("Data at null is %d\n", *ptr);
+		return 0;
+}</code></pre>
+
+			<p>This compiles seamlessly. When run, it yields:</p>
+
+<pre><code>Segmentation fault (core dumped)</code></pre>
+
+			<p>Oops. I guess that puts a wrench in the works.</p>
+
+			<h2 class="center">The Truth</h2>
+
+			<p><i>NOTE: The rest of this article is specific to the x86, since I don't know enough about other processor architectures to go into the same level of detail.</i></p>
+
+			<p>The truth is, the memory at 0 can be <b>whatever the OS wants it to be</b>. Memory on the x86 is structured according to a scheme called <i>paging</i>. Basically, the address you think you're accessing (the logical address) isn't the address you're really addressing (the physical address). Rather, the logical address is translated into a physical address by the processor's <b>Memory Management Unit</b> (<b>MMU</b>, with the help of some tables supplied by the operating system.</p>
+			<p>The reason for this is simple. As a programmer, you expect your program to be loaded into memory by the operating system at a consistent and documented location. However, there's no way for the OS to satisfy this requirement for every single program, except it actually can with the use of paging.</p>
+			<p>To understand this, let's examine a simplified version of what happens when you try to access memory.</p>
+
+			<ol>
+				<li>The processor encounters an instruction that access memory location <i>X</i>.</li>
+				<li>The processor sends <i>X</i> to the MMU.</li>
+				<li>The MMU looks for an entry that maps <i>X</i> in the page tables. The page tables are a set of data structures supplied by the operating system; in essence, they're a list of entries that tell the CPU to map physical address <i>A</i> to physical address <i>B</i>.
+					<ul>
+						<li>If there is a memory that maps <i>X</i> to some physical address, execute the original operation with the physical address.</li>
+						<li>If there memory is not mapped, trigger the operating system's exception handler since an error has occurred. This is called a page fault.</li>
+					</ul>
+				</li>
+			</ol>
+
+			<p><i>NOTE: The term "paging" and "pages" comes from the fact that this mapping is done with a granularity of 4 kilobytes. The smallest amount of memory that can be mapped (4 kilobytes) is referred to as a page.</i></p>
+
+			<p>This means that the physical address zero corresponds to is entirely up to how the OS has mapped it. This is, of course, dependent on which operating system you are using. However, most OSes use an approach called the <i>higher half kernel</i>. This is as simple as it sounds: the upper half of the virtual address space is reserved for the kernel, and the lower half is reserved for whichever userspace program currently has control over the processor. On 32-bit systems, Windows reserves 2 GB while Linux reserves 1.</p>
+
+			<p>To clarify, the kernel is not actually consuming 1 or 2 gigabytes of RAM. It simply means that any given moment, a certain amount of <i>virtual</i> addresses are reserved for the kernel to use. Physical pages are allocated and released on demand, meaning the amount of memory <b>actually</b> consumed is in no way correlated to how the virtual address space is partitioned. However, the <b>maximum</b> amount of memory that a process can have mapped into its address space <i>is</i> limited.</p>
+
+			<p>So where exactly does that bring us? Not very far. Paging has only served to cloud our quest for the gospel by adding a giant conditional to the answer:</p>
+
+			<p><b>IF your program is executed in an environment with paging (which will be provided by any sane operating system), the physical address that the zero address in your address space is mapped to could be totally arbitrary. On Linux, in userspace zero is not mapped. However, you can invoke the <code>mmap()</code> system call to map the zero address to a file. This will be different on other systems.</b></p>
+
+			<h2 class="center">But what if...</h2>
+
+			<p>...we had control of the processor <i>right after it booted</i>, before any pesky operating system had the chance to set up paging?</p>
+			<p>On boot, modern x86 processors start in a compatibility mode called Real Mode, in which the processor emulates the capabilities of an original 8086. In Real Mode, paging doesn't exist. All memory is pretty much physical, asides for a thin layer of static translation that allows the processor to access more than 2<sup>16</sup> bytes of memory through "segmentation". In this mode, we could access the memory at zero and read its contents. However, it's difficult to get to Real Mode: an OS certainly won't enable it for you as it would totally derail its operation, and you would have to be some kind of crazy person to write your own bootable code just to perform this inane task.</p>
+
+			<h3 class="center">Writing the Bootsector</h3>
+
+<pre><code>
+; Tell assembler to generate 16-bit code for obvious reasons.
+BITS 16
+
+; The bootsector is loaded into memory at physical address 0x7C00.
+ORG 0x7C00
+
+; Use a far jump to set CS to 0.
+; This is necessary since there are several segment-offset addresses that translate to 0x7C00.
+; We could be loaded at any one of these. This instruction makes sure it's 0x0000:0x7C00.
+jmp 0x0000:start
+
+start:
+
+	; We'll print the first 512 bytes in memory, starting at zero.
+	
+	; Set up a small stack right below bootsector
+	cli
+	xor ax,  ax
+	mov ss, ax
+	mov sp, 0x7BFF
+	sti
+
+	; Clear SI (it'll be our loop counter)
+	xor si, si
+
+.loop:
+
+	; Loop exit condition
+	cmp si, 512
+	je .done
+
+	; Load the value
+	mov al, BYTE [si]
+
+	; Print
+	call phexb
+
+	; Increment loop counter
+	inc si
+
+	jmp .loop
+
+.done:
+
+	; Disable maskable interrupts
+	cli
+
+	; Halt the CPU until an interrupt arrives
+	hlt
+
+	; Infinitely loop in case a non-maskable interrupt brings us out of HLT.
+	jmp .done
+
+; Subroutine to print hex byte in AL
+phexb:
+
+	; Print upper 4 bits (1 hex digit)
+	; Save AL, extract upper digit
+	push ax
+	shr al, 4
+	call phexn
+
+	; Repeat for original
+	pop ax
+	and al, 0x0F
+	call phexn
+
+	; Print separator
+	mov al, ','
+	int 0x10
+
+	ret
+
+; Subroutine to print hex digit in AL
+phexn:
+
+	; Trick - convert to ASCII
+	cmp al, 0xA
+	jge .more
+	add al, '0'
+	jmp .print
+
+.more:
+	sub al, 0xA
+	add al, 'A'
+
+.print:
+
+	; BIOS INT 0x10 AH=0x0E: Print character (AL = character)
+	mov ah, 0x0E
+	int 0x10
+
+	ret
+
+TIMES 510-($-$$) db 0
+dw 0xAA55
+</code></pre>
+
+<pre><code>nasm -f bin bootsector.asm -o bootsector.bin</code></pre>
+		</div>
+	</body>
+</html>
