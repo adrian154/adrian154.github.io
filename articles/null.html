@@ -82,6 +82,10 @@ int main(int argc, char **argv) {
 
 			<h3 class="center">Writing the Bootsector</h3>
 
+			<p>Surprisingly, it's not hard to get your code to run bare metal on a computer. Back in the days of DOSes and diskettes, the boot process was relatively simple. The BIOS would search through the drives attached to the system, checking the first 512-byte sector of each device. If it had a certain magic number (0xAA55) at the end, it would load the sector to a certain location in memory and run it. On a normal OS back then, you would load the next stage of the bootloader from the disk which performs various tasks and then loads the OS proper. However, our task is small, so we will write the entire program in the 512-byte bootsector.</p>
+
+			<p>We will have to write our bootsector in assembly. I won't explain the code in too much detail, but if you are at all familiar with x86, this will hopefully be intuitive.</p>
+
 <pre><code>
 ; Tell assembler to generate 16-bit code for obvious reasons.
 BITS 16
@@ -181,7 +185,21 @@ TIMES 510-($-$$) db 0
 dw 0xAA55
 </code></pre>
 
+			<p>To run it, just assemble it and write it to a disk with <code>dd</code>.</p>
+
 <pre><code>nasm -f bin bootsector.asm -o bootsector.bin</code></pre>
+
+			<p>Of course, I won't boot it on real hardware. We'll use the next best thing, an emulator. Booting this "disk image" on QEMU is easy:</p>
+
+<pre><code>qemu-system-i836 -hda bootsector.bin</code></pre>
+
+			<p>It prints this output:</p>
+			<img src="null_1.png">
+
+			<p>Evidently, there's something meaningful here since QEMU normally zeroes out unused memory. What is it?</p>
+
+			<p><i>To be continued...</i></p>
+
 		</div>
 	</body>
 </html>
