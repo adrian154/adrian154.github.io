@@ -165,10 +165,7 @@ let step = function() {
 			if(Math.random() > 0.7) {
 				let angle = planets[0].heading + Math.random() * 2 - 1;
 				
-				let r, g, b;
-				r = 255;
-				g = Math.random() * 20 - 10 + 140;
-				b = 0;             
+				let color = ["#fc5a03", "#fca503", "#ffff00", "#4f4f4f"][Math.floor(Math.random() * 4)];          
 				
 				particles.push({
 					age: 0,
@@ -176,9 +173,8 @@ let step = function() {
 					y: planets[0].y,
 					vx: -Math.cos(angle) * PLAYER_ACC * 20,
 					vy: -Math.sin(angle) * PLAYER_ACC * 20,
-					r: r,
-					g: g,
-					b: b
+					color: color,
+					size: Math.random() * 5 + 5
 				});
 			}
 			
@@ -199,7 +195,6 @@ let draw = function() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     /* draw particles */
-    ctx.globalAlpha = 0.7;
 	for(let i = 0; i < particles.length; i++) {
 		let particle = particles[i];
 		
@@ -208,14 +203,12 @@ let draw = function() {
 			particle.y += particle.vy * DT;
 			particle.age++;
 		}
-		
-		let r = Math.floor(particle.r / Math.max(particle.age / 2 - 10, 1));
-		let g = Math.floor(particle.g / Math.max(particle.age / 2 - 10, 1));
-		let b = Math.floor(particle.b / Math.max(particle.age / 2 - 10, 1));
-		ctx.fillStyle = "rgb(" + r + ", " + g + "," + b + ")";
+
+		ctx.fillStyle = particle.color;
+		ctx.globalAlpha = 1 / Math.max(particle.age / 2 - 5, 1);
 		
 		ctx.beginPath();
-		ctx.arc(particle.x, particle.y, PARTICLE_RADIUS, 0, 2 * Math.PI);
+		ctx.arc(particle.x, particle.y, particle.size * (1 + (particle.age / 40)), 0, 2 * Math.PI);
 		ctx.closePath();
 		ctx.fill();
 	}
