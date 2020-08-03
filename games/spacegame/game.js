@@ -8,6 +8,7 @@ const PARTICLE_RADIUS = 5;
 const BOUNCINESS = 0.7;
 const PLAYER_ACC = 5;
 const GAME_STATE = {
+	CONTROLS: 0,
 	RUNNING: 1,
 	DEAD: 2,
 	PAUSE: 3
@@ -25,7 +26,7 @@ let mouse = {
 };
 
 let game = {
-	state: GAME_STATE.RUNNING,
+	state: GAME_STATE.CONTROLS,
 	ticks: 0,
 	highTicks: 0
 };
@@ -171,8 +172,8 @@ let step = function() {
 					age: 0,
 					x: planets[0].x,
 					y: planets[0].y,
-					vx: -Math.cos(angle) * PLAYER_ACC * 20,
-					vy: -Math.sin(angle) * PLAYER_ACC * 20,
+					vx: -Math.cos(angle) * PLAYER_ACC * 30,
+					vy: -Math.sin(angle) * PLAYER_ACC * 30,
 					color: color,
 					size: Math.random() * 5 + 5
 				});
@@ -205,7 +206,7 @@ let draw = function() {
 		}
 
 		ctx.fillStyle = particle.color;
-		ctx.globalAlpha = 1 / Math.max(particle.age / 2 - 5, 1);
+		ctx.globalAlpha = 1 / Math.max(particle.age / 2 - 3, 1);
 		
 		ctx.beginPath();
 		ctx.arc(particle.x, particle.y, particle.size * (1 + (particle.age / 40)), 0, 2 * Math.PI);
@@ -219,7 +220,7 @@ let draw = function() {
 		if(particles[i].age > 100) particles.splice(i, 1);
 
 	/* draw everything faded if in death screen */
-	if(game.state == GAME_STATE.DEAD) ctx.globalAlpha = 0.5;
+	if(game.state == GAME_STATE.DEAD || game.state == GAME_STATE.CONTROLS) ctx.globalAlpha = 0.5;
 	
 	for(let i = 0; i < planets.length; i++) {
 		let planet = planets[i];
@@ -248,6 +249,28 @@ let draw = function() {
 		ctx.font = "24px Consolas";
 		ctx.fillStyle = "#00ff00";
 		ctx.fillText(toTimeStr(game.ticks), 10, 24);
+	} else if(game.state == GAME_STATE.CONTROLS) {
+		
+		/* draw controls */
+		ctx.globalAlpha = 1.0;
+		ctx.font = "50px Consolas";
+		ctx.fillStyle = "#ffff00";
+		ctx.textAlign = "center";
+		
+		ctx.fillText("SPACE GAME", canvas.width / 2, canvas.height / 2);
+		
+		ctx.font = "24px Consolas";
+		ctx.fillText("Move your mouse to look around", canvas.width / 2, canvas.height / 2 + 50);
+		ctx.fillText("Hold left-click to fire your engines", canvas.width / 2, canvas.height / 2 + 70);
+		ctx.fillText("Don't hit the asteroids", canvas.width / 2, canvas.height / 2 + 90);
+		ctx.fillText("Death is inevitable", canvas.width / 2, canvas.height / 2 + 110);
+		
+		ctx.font = "36px Consolas";
+		ctx.fillStyle = "#ff1493";
+		ctx.fillText("PRESS ANY KEY TO BEGIN", canvas.width / 2, canvas.height - 20);
+		
+		ctx.textAlign = "left";	
+		
 	} else if(game.state == GAME_STATE.DEAD) {
 	
 		/* draw death text */
@@ -304,7 +327,7 @@ window.addEventListener("mousemove", function(event) {
 });
 
 window.addEventListener("keydown", function(event) {
-	if(game.state == GAME_STATE.DEAD) resetGame();
+	if(game.state == GAME_STATE.DEAD || game.state == GAME_STATE.CONTROLS) resetGame();
 	else if(game.state == GAME_STATE.RUNNING && event.key == " ") game.state = GAME_STATE.PAUSED;
 	else if(game.state == GAME_STATE.PAUSED && event.key == " ") game.state = GAME_STATE.RUNNING;
 	if(event.key == "d") debug = !debug;
