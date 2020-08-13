@@ -153,7 +153,7 @@ Q . V2 = u * (V1 . V2) + v * (V2 . V2)
 // (Tedious substitution)
 ```
 
-This brings us to the final formula.
+This brings us to the final formula:
 
 ```js
 const dot = (vec0, vec1) => vec0[0] * vec1[0] + vec0[1] * vec1[1];
@@ -161,20 +161,19 @@ const dot = (vec0, vec1) => vec0[0] * vec1[0] + vec0[1] * vec1[1];
 const calcBaryCoords = function(point, vert0, vert1, vert2) {
 
     // Make P into Q
-    point[0] -= vert0[0];
-    point[1] -= vert0[1];
+    let Q = [point[0] - vert0[0], point[1] - vert0[1]];
 
     let v1 = [vert1[0] - vert0[0], vert1[1] - vert0[1]];
     let v2 = [vert2[0] - vert0[0], vert2[1] - vert0[1]];
 
     // Precalculate dot products to make things easier
-    let A = dot(point, v1);
-    let B = dot(point, v2);
+    let A = dot(Q, v1);
+    let B = dot(Q, v2);
     let c = dot(v1, v1);
     let d = dot(v1, v2);
     let e = dot(v2, v2);
 
-    let u = (B * d) / (A * e  * (d * d - e * c));
+    let u = (B * d - A * e) / (d * d - c * e);
     let v = (A - u * c) / d;
 
     return [u, v];
@@ -186,4 +185,8 @@ Of course, you may want to integrate this into your triangle-rendering calculati
 
 ### So, how do we check if a point is in the triangle?
 
-It's simple. For starters, *u* and *v*  must be positive; if they are negative, the point is definitely on the wrong side of the basis vectors. Next, *u* + *v* must be 1.
+It's simple. For starters, *u* and *v*  must be positive; if they are negative, the point is definitely on the wrong side of the basis vectors. Next, *u* + *v* must be less than 1. [todo: explain why]
+
+An interactive demonstration of this can be found [here](https://adrian154.github.io/games/rasterizer/bary_demo.html).
+
+# WIP
