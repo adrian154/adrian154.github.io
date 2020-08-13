@@ -37,6 +37,10 @@ const animate = function() {
     let topText = "";
     if(points.length == 3) {
 
+        let coords = calcBaryCoords(mousePos, points[0], points[1], points[2]);
+        let inTriangle = coords[0] > 0 && coords[1] > 0  && coords[0] + coords[1] < 1;
+        topText = `u = ${coords[0].toFixed(2)}, v = ${coords[1].toFixed(2)}`;
+
         outCtx.beginPath();
         outCtx.moveTo(points[0][0], points[0][1]);
         outCtx.lineTo(points[1][0], points[1][1]);
@@ -44,6 +48,7 @@ const animate = function() {
         outCtx.closePath();
 
         outCtx.globalAlpha = 0.25;
+        outCtx.fillStyle = inTriangle ? "#00ff00" : "#ff0000";
         outCtx.fill();
 
         outCtx.strokeStyle = "#000000";
@@ -58,13 +63,11 @@ const animate = function() {
         outCtx.closePath();
         outCtx.stroke();
 
-        let coords = calcBaryCoords(mousePos, points[0], points[1], points[2]);
-        console.log(coords);
-
     } else {
         topText = `Click to add points (${3 - points.length} to go)`;
     }
 
+    outCtx.fillStyle = "#000000";
     outCtx.fillText(topText, 20, 20);
 
     // Always draw points on top
