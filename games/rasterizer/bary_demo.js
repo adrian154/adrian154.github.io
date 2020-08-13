@@ -1,5 +1,6 @@
 // Points of the triangle
 const points = [];
+const mousePos = [0, 0];
 
 const outCanvas = document.getElementById("output");
 const outCtx = outCanvas.getContext("2d");
@@ -10,20 +11,19 @@ const dot = (vec0, vec1) => vec0[0] * vec1[0] + vec0[1] * vec1[1];
 const calcBaryCoords = function(point, vert0, vert1, vert2) {
 
     // Make P into Q
-    point[0] -= vert0[0];
-    point[1] -= vert0[1];
+    let Q = [point[0] - vert0[0], point[1] - vert0[1]];
 
     let v1 = [vert1[0] - vert0[0], vert1[1] - vert0[1]];
     let v2 = [vert2[0] - vert0[0], vert2[1] - vert0[1]];
 
     // Precalculate dot products to make things easier
-    let A = dot(point, v1);
-    let B = dot(point, v2);
+    let A = dot(Q, v1);
+    let B = dot(Q, v2);
     let c = dot(v1, v1);
     let d = dot(v1, v2);
     let e = dot(v2, v2);
 
-    let u = (B * d) / (A * e  * (d * d - e * c));
+    let u = (B * d - A * e) / (d * d - c * e);
     let v = (A - u * c) / d;
 
     return [u, v];
@@ -46,8 +46,20 @@ const animate = function() {
         outCtx.globalAlpha = 0.25;
         outCtx.fill();
 
+        outCtx.strokeStyle = "#000000";
         outCtx.globalAlpha = 1.0;
         outCtx.stroke();
+
+         // Draw BIG RED LINE!
+        outCtx.strokeStyle = "#ff0000";
+        outCtx.beginPath();
+        outCtx.moveTo(points[0][0], points[0][1]);
+        outCtx.lineTo(mousePos[0], mousePos[1]);
+        outCtx.closePath();
+        outCtx.stroke();
+
+        let coords = calcBaryCoords(mousePos, points[0], points[1], points[2]);
+        console.log(coords);
 
     } else {
         topText = `Click to add points (${3 - points.length} to go)`;
@@ -74,6 +86,17 @@ outCanvas.addEventListener("click", event => {
     let y = event.clientY - rect.top;
 
     if(points.length < 3) points.push([x, y]);
+
+});
+
+outCanvas.addEventListener("mousemove", event => {
+    
+    let rect = outCanvas.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+
+    mousePos[0] = x;
+    mousePos[1] = y;
 
 });
 
