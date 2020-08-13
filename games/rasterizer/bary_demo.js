@@ -55,7 +55,46 @@ const animate = function() {
         outCtx.globalAlpha = 1.0;
         outCtx.stroke();
 
-         // Draw BIG RED LINE!
+        // Draw u/v lines
+        outCtx.strokeStyle = "#0000ff";
+
+        let uNorm = [points[1][0] - points[0][0], points[1][1] - points[0][1]];
+        let uLen = Math.sqrt(uNorm[0] * uNorm[0] + uNorm[1] * uNorm[1]);
+        uNorm[0] /= uLen; uNorm[1] /= uLen;
+
+        let vNorm = [points[2][0] - points[0][0], points[2][1] - points[0][1]];
+        let vLen = Math.sqrt(vNorm[0] * vNorm[0] + vNorm[1] * vNorm[1]);
+        vNorm[0] /= vLen; vNorm[1] /= vLen;
+
+        outCtx.lineWidth = 5;
+        outCtx.beginPath();
+        let x = points[0][0];
+        let y = points[0][1];
+        outCtx.moveTo(x, y);
+        x += uNorm[0] * uLen * coords[0];
+        y += uNorm[1] * uLen * coords[0];
+        outCtx.lineTo(x, y);
+        outCtx.closePath();
+        outCtx.stroke();
+
+        outCtx.fillStyle = "#000000";
+        outCtx.fillText(coords[0].toFixed(2), points[0][0] + uNorm[0] * uLen * (coords[0] / 2) + 10, points[0][1] + uNorm[1] * uLen * (coords[0] / 2) + 10);
+
+        outCtx.beginPath();
+        x = points[0][0];
+        y = points[0][1];
+        outCtx.moveTo(x, y);
+        x += vNorm[0] * vLen * coords[1];
+        y += vNorm[1] * vLen * coords[1];
+        outCtx.lineTo(x, y);
+        outCtx.closePath();
+        outCtx.stroke();
+
+        outCtx.fillText(coords[1].toFixed(2), points[0][0] + vNorm[0] * vLen * (coords[1] / 2) + 10, points[0][1] + vNorm[1] * vLen * (coords[1] / 2) + 10);
+
+        outCtx.lineWidth = 1;
+
+        // Draw BIG RED LINE!
         outCtx.strokeStyle = "#ff0000";
         outCtx.beginPath();
         outCtx.moveTo(points[0][0], points[0][1]);
