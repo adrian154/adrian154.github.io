@@ -77,9 +77,6 @@ const animate = function() {
         outCtx.closePath();
         outCtx.stroke();
 
-        outCtx.fillStyle = "#000000";
-        outCtx.fillText(coords[0].toFixed(2), points[0][0] + uNorm[0] * uLen * (coords[0] / 2) + 10, points[0][1] + uNorm[1] * uLen * (coords[0] / 2) + 10);
-
         outCtx.beginPath();
         x = points[0][0];
         y = points[0][1];
@@ -89,8 +86,6 @@ const animate = function() {
         outCtx.lineTo(x, y);
         outCtx.closePath();
         outCtx.stroke();
-
-        outCtx.fillText(coords[1].toFixed(2), points[0][0] + vNorm[0] * vLen * (coords[1] / 2) + 10, points[0][1] + vNorm[1] * vLen * (coords[1] / 2) + 10);
 
         outCtx.lineWidth = 1;
 
