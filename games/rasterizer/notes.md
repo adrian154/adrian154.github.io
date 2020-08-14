@@ -185,8 +185,74 @@ Of course, you may want to integrate this into your triangle-rendering calculati
 
 ### So, how do we check if a point is in the triangle?
 
-It's simple. For starters, *u* and *v*  must be positive; if they are negative, the point is definitely on the wrong side of the basis vectors. Next, *u* + *v* must be less than 1. [todo: explain why]
+It's simple. For starters, *u* and *v*  must be positive; if they are negative, the point is definitely on the wrong side of the basis vectors.
+
+Next, *u* + *v* must be less than 1. Imagine the same condition on the Cartesian plane: `x + y < 1`. It would look something like this:
+
+![image](https://i.imgur.com/R2AYoYL.png)
+
+*Apologies for the crude illustration method :)*
+
+Our barycentric coordinate system is much the same, except it's oriented so that *u = 1* corresponds to one vertex of the triangle, and *v = 1* corresponds to the other. This effectively "stretches" the normal Cartesian plane so that the bound we have set (`u + v < 1`) lies upon the final edge of the triangle.
 
 An interactive demonstration of this can be found [here](https://adrian154.github.io/games/rasterizer/bary_demo.html).
 
-# WIP
+## The code
+
+All of this fiddling with numbers yields this result:
+
+```js
+
+// Takes 2D points, draws to an imagedata
+const drawTriangle = function(point0, point1, point2, imageData, r, g, b) {
+
+    // Find bounding box
+    let min = [
+        Math.min(Math.min(point0[0], point1[0]), point2[0]),
+        Math.min(Math.min(point0[1], point1[1]), point2[1])
+    ];
+
+    let max = [
+        Math.max(Math.max(point0[0], point1[0]), point2[0]),
+        Math.max(Math.max(point0[1], point1[1]), point2[1])
+    ];
+
+    // Precompute some stuff
+    let v1 = [point1[0] - point0[0], point1[1] - point0[1]];
+    let v2 = [point2[0] - point0[0], point2[1] - point0[1]];
+    let c = dot(v1, v1);
+    let d = dot(v1, v2);
+    let e = dot(v2, v2);
+
+    for(let x = min[0]; x < max[0]; x++) {
+        for(let y = min[1]; y < max[1]; y++) {
+
+            // Check if point is in triangle by calculating barycentric coordinates
+            let Q = [x - point0[0], y - point0[1]];
+            let A = dot(Q, v1);
+            let B = dot(Q, v2);
+
+            let u = (B * d - A * e) / (d * d - c * e);
+            if(u < 0) continue;
+
+            let v = (A - u * c) / d;
+            if(v < 0) continue;
+
+            if(u + v > 1) continue;
+
+            // Get index, fill
+            let idx = Math.floor(y * imageData.width + x) * 4;
+            imageData.data[idx] = r;
+            imageData.data[idx + 1] = g;
+            imageData.data[idx + 2] = b;
+            imageData.data[idx + 3] = 255;
+
+        }
+    }
+
+};
+```
+
+This code is pretty heavily unoptimized since it is extremely GC-intensive (several lists per pixel per triangle!!) Optimizing it would make it further unreadable, however, so that is left as a task for the reader.
+
+# END
