@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Math Thing</title>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({displayAlign: "left"});
+        </script>
+    </head>
+    <body>
+        <p id="output"></p>
+        <script>
+            let url = new URL(window.location);
+            let params = url.searchParams;
+            if(params.get("math") !== null) {
+                let math = params.get("math").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                document.getElementById("output").innerHTML = math;
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            } else {
+                document.getElementById("output").innerHTML = "Sorry! This URL is invalid! It's missing any content...";
+            }
+        </script>
+        <p>This page displays its contents using <a href="https://www.mathjax.org/">MathJax</a>. Go check it out!</p>
+        <p>Or, <a href="createmath.html">create</a> a page like this.</p>
+    </body>
+</html>

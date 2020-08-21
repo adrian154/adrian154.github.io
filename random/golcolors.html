@@ -1,0 +1,207 @@
+<html>
+	<body>
+		<canvas id="output"></canvas>
+		<p id="message"></p>
+		<button onclick="running = !running">Stop/go</button>
+		<button onclick="step()">Step once</button>
+
+		<p>This widget is open source! Check it out <a href="https://github.com/adrian154/adrian154.github.io/blob/master/gol.html">here</a> on GitHub.</p>
+		
+		<textarea id="pattern" cols="60" rows="10"></textarea><br><br>
+		<button onclick="putPattern()">Use Pattern</button>
+		<pre id="link"></pre>
+
+		<script>
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
+
+const message = document.getElementById("message");
+const patternField = document.getElementById("pattern");
+const link = document.getElementById("link");
+
+// Parse URL
+const url = new URL(window.location.href);
+
+let bornRule = url.searchParams.get("b");
+let surviveRule = url.searchParams.get("s");
+
+// Default CGOL rules
+let born = [3];
+let survive = [1, 3, 4];
+
+if(bornRule !== null && surviveRule !== null) {
+	born = bornRule.split("").map(str => parseInt(str));
+	survive = surviveRule.split("").map(str => parseInt(str));
+}
+
+let initDensity = 0.5;
+let pInitDensity = url.searchParams.get("density");
+if(pInitDensity !== null) {
+	initDensity = parseFloat(pInitDensity);
+}
+
+let running = true;
+
+// Other constants
+const CELL_SIZE = 2;
+const WIDTH = 256;
+const HEIGHT = 256;
+
+canvas.width = WIDTH * CELL_SIZE;
+canvas.height = HEIGHT * CELL_SIZE;
+
+const make2DArr = function(xSize, ySize) {
+	let result = new Array(xSize);
+	for(let x = 0; x < xSize; x++) {
+		result[x] = new Array(ySize);
+	}
+	return result;
+}
+
+// Double-buffer board 
+const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH * HEIGHT)];
+let which = 0;
+
+const reset = function() {
+
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+			board[which][x][y] = 0;
+		}
+	}	
+
+};
+
+const init = function() {
+
+	if(url.searchParams.get("pattern") != null) {
+		
+		reset();
+		loadPattern(url.searchParams.get("pattern"));
+
+	} else {
+
+		for(let x = 0; x < WIDTH; x++) {
+			for(let y = 0; y < HEIGHT; y++) {
+				board[which][x][y] = Math.random() < initDensity ? (Math.random() > 0.5 ? 2 : 1) : 0;
+			}
+		}
+
+	}
+
+};
+
+let totalRed = 0;
+let totalBlue = 0;
+const step = function() {
+		
+	let next = which == 1 ? 0 : 1;
+	totalRed = 0;
+	totalBlue = 0;
+
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+		
+			let neighborsRed = 0;
+			let neighborsBlue = 0;
+			for(let dx = -1; dx <= 1; dx++) {
+				for(let dy = -1; dy <= 1; dy++) {
+					if(dx == 0 && dy == 0) continue;
+					let val = board[which][(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT] ;
+					neighborsRed += val == 1 ? 1 : 0;
+					neighborsBlue += val == 2 ? 1 : 0;
+				}	
+			}
+
+			// Die
+			board[next][x][y] = 0;
+
+			if(board[which][x][y] == 1) {
+				totalRed++;
+			} else if(board[which][x][y] == 2) {
+				totalBlue++;
+			}
+
+			// Survive
+			if(survive.indexOf(neighborsRed + neighborsBlue) >= 0) {
+				board[next][x][y] = board[which][x][y];
+			}
+
+			// Born
+			if(born.indexOf(neighborsRed + neighborsBlue) >= 0) {
+				board[next][x][y] = neighborsRed > neighborsBlue ? 1 : 2;
+			}
+			
+		}
+	}
+
+	console.log(totalRed, totalBlue);
+
+	which = next;
+
+};
+
+const draw = function() {
+
+	ctx.fillStyle = "#fffae3";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	ctx.fillStyle = "black";
+
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+			if(board[which][x][y] > 0) {
+				ctx.fillStyle = board[which][x][y] == 1 ? "red" : "blue";
+				ctx.fillRect(
+					x * CELL_SIZE,
+					y * CELL_SIZE,
+					CELL_SIZE,
+					CELL_SIZE
+				);
+			}
+		}
+	}
+
+};
+
+const run = function() {
+
+	draw();
+	if(running) step();
+	setTimeout(() => {requestAnimationFrame(run);}, 30);
+
+};
+
+const putPattern = function() {
+
+	reset();
+	loadPattern(patternField.value);
+	
+	url.searchParams.set("pattern", patternField.value);
+	document.getElementById("link").innerHTML = url;
+
+};
+
+const loadPattern = function(pattern) {
+
+	let lines = pattern.split("\n");
+
+	let pWidth = lines[0].length;
+	let pHeight = lines.length;
+
+	let xMargin = Math.floor((WIDTH - pWidth) / 2);
+	let yMargin = Math.floor((HEIGHT - pHeight) / 2);
+
+	for(let x = 0; x < pWidth; x++) {
+		for(let y = 0; y < pHeight; y++) {
+			board[which][x + xMargin][y + yMargin] = lines[y][x] != '.' ? 1 : 0;
+		}
+	}
+
+}
+
+init();
+run();
+		</script>
+	</body>
+</html>
