@@ -10,6 +10,11 @@
     </head>
     <body>
         <p id="output"></p>
+        <p>This page displays its contents using <a href="https://www.mathjax.org/">MathJax</a>. Go check it out!</p>
+
+        <p id="edit"></p>
+        <p>Or, <a href="createmath.html">create</a> a page like this.</p>
+
         <script>
             let url = new URL(window.location);
             let params = url.searchParams;
@@ -17,11 +22,15 @@
                 let math = params.get("math").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 document.getElementById("output").innerHTML = math;
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+
+                let editURL = new URL(window.location);
+                editURL.pathname = editURL.pathname.replace("math.html", "createmath.html");
+                editURL.searchParams.set("edit", params.get("math"));
+                document.getElementById("edit").innerHTML = `<a href="${editURL}">Edit this page!</a>`;
             } else {
                 document.getElementById("output").innerHTML = "Sorry! This URL is invalid! It's missing any content...";
             }
+    
         </script>
-        <p>This page displays its contents using <a href="https://www.mathjax.org/">MathJax</a>. Go check it out!</p>
-        <p>Or, <a href="createmath.html">create</a> a page like this.</p>
     </body>
 </html>

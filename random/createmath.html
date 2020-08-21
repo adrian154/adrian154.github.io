@@ -11,8 +11,10 @@
     <body>
         
         <p>This page displays its contents with <a href="https://www.mathjax.org/">MathJax</a>. Go check it out!</p>
+        <p>TeX/LaTeX and AsciiMath are supported.</p>
         <textarea rows="10" cols="80" placeholder="Math goes here..." id="input"></textarea><br><br>
-        <input type="text" id="urlOut" readonly> <button>Copy to Clipboard</button>
+        <p>Send this link to people so they can see your math, too.</p>
+        <input type="text" id="urlOut" readonly> <button onclick="copy()">Copy to Clipboard</button>
         <button onclick="update()">Update</button>
         <p id="preview"></p>
 
@@ -20,14 +22,26 @@
             let preview = document.getElementById("preview");
             let input = document.getElementById("input");
             let output = document.getElementById("urlOut");
-            let url = new URL(window.location.href);
+            let url = new URL(window.location);
+
             const update = function() {
                 preview.innerHTML = input.value;
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-                url.pathname = "/math.html";
+                console.log(url);
+                url.pathname = url.pathname.replace("createmath.html", "math.html");
                 url.searchParams.set("math", input.value);
                 output.value = url;
             };
+
+            const copy = function() {
+                output.select();
+                document.execCommand("copy");
+            };
+
+            if(url.searchParams.get("edit") !== null) {
+                input.value = url.searchParams.get("edit");
+                update();
+            }
         </script>
     </body>
 </html>
