@@ -6,23 +6,25 @@ if(!gl) {
 }
 
 // --- create shaders and program
-const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSrc);
-const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSrc);
-const program = createProgram(gl, vertexShader, fragmentShader);
+const program = createProgram(gl, vertexShaderSrc, fragmentShaderSrc);
 gl.useProgram(program);
+
 
 // --- bind some crap 
 
-// create buffer for the positions we'll pass to the vertex shader
+// get attribute locations
 const inPosAttrLoc = gl.getAttribLocation(program, "inPos");
+
+// create and bind buffers
 const posBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
 
+// create other stuff
 // vertex array object (VAO) stores vertexes out of the vertex shader
 const vao = gl.createVertexArray();
 gl.bindVertexArray(vao);
 
-// enable the attribute we got earlier so we can get data out of the buffer
+// enable attributes
 gl.enableVertexAttribArray(inPosAttrLoc);
 
 // tell OpenGL how to pull data out of the buffer
@@ -35,23 +37,24 @@ gl.vertexAttribPointer(
     0               // no offset
 );
 
-// more binding
-gl.bindVertexArray(vao);
-
 // set up viewport size so clip coords can be mapped appropriately
 gl.viewport(0, 0, canvas.width, canvas.height)
+
+// screenspace quad data
+let positions = [
+    -1, -1,
+    1, -1,
+    -1, 1,
+    1, -1,
+    -1, 1,
+    1, 1
+];
 
 const draw = function() {
 
     // clear canvas
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    let positions = [
-        0, 0,
-        0, 0.5,
-        0.7, 0
-    ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     gl.drawArrays(

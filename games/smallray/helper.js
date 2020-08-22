@@ -13,7 +13,7 @@ const createShader = function(gl, type, source) {
 
 };
 
-const createProgram = function(gl, vertexShader, fragmentShader) {
+const createProgramFromShaders = function(gl, vertexShader, fragmentShader) {
 
     let program = gl.createProgram();
     gl.attachShader(program, vertexShader);
@@ -26,4 +26,12 @@ const createProgram = function(gl, vertexShader, fragmentShader) {
     console.error(`Failed to link program: ${gl.getProgramInfoLog(program)}`);
     gl.deleteProgram(program);
 
+};
+
+const createProgram = function(gl, vertexShaderSrc, fragmentShaderSrc) {
+    return createProgramFromShaders(
+        gl,
+        createShader(gl, gl.VERTEX_SHADER, vertexShaderSrc),
+        createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSrc)
+    );
 };
