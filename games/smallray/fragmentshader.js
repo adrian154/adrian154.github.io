@@ -2,10 +2,11 @@ let fragmentShaderSrc = `#version 300 es
 
 precision highp float;
 
-// output color
-out vec4 outColor;
+in vec2 vOutCoord;
+
+out vec4 fOutColor;
 
 void main() {
-    outColor = vec4(0.0, 0.0, 1.0, 1.0);
+    fOutColor = vec4((vOutCoord.x + 1.0) / 2.0, (vOutCoord.y + 1.0) / 2.0, 0.0, 1.0);
 }
 `;
