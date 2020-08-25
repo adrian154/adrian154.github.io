@@ -1,7 +1,13 @@
 <html>
+    <head>
+        <title>Minesweeper</title>
+    </head>
     <body>
         <canvas id="output" width="512" height="512"></canvas>
         <script>
+// this code is REALLY bad
+// i'm normally a pretty shitty coder but this is especially terrible
+
 const SIZE = 16;
 const DENSITY = 0.1; // higher = more mines
 
@@ -27,11 +33,17 @@ let inBounds = function(x, y) {
 
 let gameOver = false;
 let gameWin = false;
+let firstClick = true;
 
 let clear = function(x, y) {
     
     if(!inBounds(x, y))
         return;
+
+    if(firstClick) {
+        board[x][y].mine = false;
+        firstClick = false;
+    }
 
     gameOver = gameOver || board[x][y].mine;
 
