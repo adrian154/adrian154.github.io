@@ -75,7 +75,7 @@ const draw = function() {
         gl.TRIANGLES,           // draw triangles
         0,                      // no offset
         positions.length / 2    // however many triangles there are in positions
-    )
+    );
 
 };
 
