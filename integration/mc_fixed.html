@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset ="utf-8">
+        <title>Monte Carlo Pi</title>
+        <style>
+            #out-data {
+                font-family: monospace;
+            }
+        </style>
+        <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+                jax: ["input/TeX","output/HTML-CSS"],
+                displayAlign: "left"
+            });
+        </script>
+    </head>
+    <body>
+        <p>Pi can be defined as the ratio between a circle and the square containing it's area.</p>
+        <p>$$A = \pi r^2$$</p>
+        <p>This can be converted into an integral...</p>
+        <p>$$\pi = \int_0^1 \frac{1}{\sqrt{1-x^2}}$$</p>
+        <p>...which can be estimated with a Monte Carlo method.</p>
+        <p>The uniform sampler uses random uniformly distributed samples. The stratified sampler splits space into a regular grid, evenly distributing random samples within each cell.</p>
+        <button onclick="sampler = sampleStratified; run();">Run with Stratified Sampler</button>
+        <button onclick="sampler = sampleUniform; run();">Run with Uniform Sampler</button><br>
+        <canvas id="out-canvas" width="512" height="512"></canvas>
+        <p id="out-data"></p>
+        <script>
+            const canvas = document.getElementById("out-canvas");
+            const ctx = canvas.getContext("2d");
+            const data = document.getElementById("out-data");
+
+            const sampleUniform = function() {
+                let result = new Array(1024);
+                for(let i = 0; i < result.length; i++) {
+                    result[i] = [Math.random(), Math.random()];
+                }
+                return result;
+            };
+
+            const sampleStratified = function() {
+
+                // split space into 8 bins for more uniform sampling
+                let result = [];
+                for(let x = 0; x < 16; x++) {
+                    for(let y = 0; y < 16; y++) {
+                        for(let i = 0; i < 4; i++) {
+                            result.push([
+                                Math.random() / 16 + x / 16,
+                                Math.random() / 16 + y / 16
+                            ]);
+                        }
+                    }
+                }
+                return result;
+
+            };
+
+            let sampler;
+
+            const run = function() {
+                
+                ctx.fillStyle = "#fffcf0";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                let samples = sampler();
+                let hits = 0;
+
+                for(let i = 0; i < samples.length; i++) {
+                    
+                    let sample = samples[i];
+                    let hit = false;
+
+                    if(sample[0] * sample[0] + sample[1] * sample[1] < 1) {
+                        hit = true;
+                        hits++;
+                    }
+
+                    // draw sample always
+                    if(hit) {
+                        ctx.fillStyle = "#ff0000";
+                    } else {
+                        ctx.fillStyle = "#0000ff";
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(sample[0] * canvas.width, canvas.height * (1 - sample[1]), 2, 0, 2 * Math.PI);
+                    ctx.closePath();
+                    ctx.fill();
+
+                }
+
+                let estimate = hits * 4 / samples.length;
+                data.innerHTML = `Estimate: ${estimate}, ground truth: ${Math.PI}, error: ${Number((estimate - Math.PI) * 100 / Math.PI).toFixed(5)}%<br>Sampler is ${sampler.name}`;
+
+            };
+        </script>
+    </body>
+</html>
