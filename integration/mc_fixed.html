@@ -17,14 +17,6 @@
         </script>
     </head>
     <body>
-        <p>Pi can be defined as the ratio between a circle and the square containing it's area.</p>
-        <p>$$A = \pi r^2$$</p>
-        <p>This can be converted into an integral...</p>
-        <p>$$\pi = \int_0^1 \frac{1}{\sqrt{1-x^2}}$$</p>
-        <p>...which can be estimated with a Monte Carlo method.</p>
-        <p>Three sampling methods are implemented, each using only 1024 samples to estimate pi.</p>
-        <p>The uniform sampler uses random uniformly distributed samples. The stratified sampler splits space into a 16x16 regular grid, evenly distributing random samples within each cell.</p>
-        <p>The refinement sampler first runs an 8x8 stratified prepass to get a rough idea of the probability distribution. It then uses its remaining samples to refine areas that are uncertain.</p>
         <button onclick="sampler = sampleStratified; run();">Run with Stratified Sampler</button>
         <button onclick="sampler = sampleUniform; run();">Run with Uniform Sampler</button>
         <button onclick="sampler = sampleRegularGrid; run();">Run with Regular Grid Sampler</button>
