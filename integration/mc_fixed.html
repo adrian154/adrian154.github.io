@@ -27,6 +27,7 @@
         <p>The refinement sampler first runs an 8x8 stratified prepass to get a rough idea of the probability distribution. It then uses its remaining samples to refine areas that are uncertain.</p>
         <button onclick="sampler = sampleStratified; run();">Run with Stratified Sampler</button>
         <button onclick="sampler = sampleUniform; run();">Run with Uniform Sampler</button>
+        <button onclick="sampler = sampleRegularGrid; run();">Run with Regular Grid Sampler</button>
         <button onclick="runRefinement();">Run with Refinement Sampler</button><br>
         <canvas id="out-canvas" width="512" height="512"></canvas>
         <p id="out-data"></p>
@@ -59,6 +60,19 @@
                 }
                 return result;
 
+            };
+
+            const sampleRegularGrid = function() {
+                let result = new Array(1024);
+                for(let x = 0; x < 32; x++) {
+                    for(let y = 0; y < 32; y++) {
+                        result[y * 32 + x] = [
+                            x / 32,
+                            y / 32
+                        ];
+                    }
+                }
+                return result;
             };
 
             let sampler;
