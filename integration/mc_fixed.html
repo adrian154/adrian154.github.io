@@ -22,9 +22,12 @@
         <p>This can be converted into an integral...</p>
         <p>$$\pi = \int_0^1 \frac{1}{\sqrt{1-x^2}}$$</p>
         <p>...which can be estimated with a Monte Carlo method.</p>
-        <p>The uniform sampler uses random uniformly distributed samples. The stratified sampler splits space into a regular grid, evenly distributing random samples within each cell.</p>
+        <p>Three sampling methods are implemented, each using only 1024 samples to estimate pi.</p>
+        <p>The uniform sampler uses random uniformly distributed samples. The stratified sampler splits space into a 16x16 regular grid, evenly distributing random samples within each cell.</p>
+        <p>The refinement sampler first runs an 8x8 stratified prepass to get a rough idea of the probability distribution. It then uses its remaining samples to refine areas that are uncertain.</p>
         <button onclick="sampler = sampleStratified; run();">Run with Stratified Sampler</button>
-        <button onclick="sampler = sampleUniform; run();">Run with Uniform Sampler</button><br>
+        <button onclick="sampler = sampleUniform; run();">Run with Uniform Sampler</button>
+        <button onclick="runRefinement();">Run with Refinement Sampler</button><br>
         <canvas id="out-canvas" width="512" height="512"></canvas>
         <p id="out-data"></p>
         <script>
@@ -60,6 +63,15 @@
 
             let sampler;
 
+            const isHit = (u, v) => u * u + v * v < 1;
+            const drawDot = (u, v, color) => {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(u * canvas.height, (1 - v) * canvas.height, 2, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            };
+
             const run = function() {
                 
                 ctx.fillStyle = "#fffcf0";
@@ -73,20 +85,13 @@
                     let sample = samples[i];
                     let hit = false;
 
-                    if(sample[0] * sample[0] + sample[1] * sample[1] < 1) {
+                    if(isHit(sample[0], sample[1])) {
                         hit = true;
                         hits++;
                     }
 
-                    // draw sample always
-                    if(hit) {
-                        ctx.fillStyle = "#ff0000";
-                    } else {
-                        ctx.fillStyle = "#0000ff";
-                    }
-
                     ctx.beginPath();
-                    ctx.arc(sample[0] * canvas.width, canvas.height * (1 - sample[1]), 2, 0, 2 * Math.PI);
+                    drawDot(sample[0], sample[1], hit ? "#ff0000" : "#0000ff");
                     ctx.closePath();
                     ctx.fill();
 
@@ -96,6 +101,94 @@
                 data.innerHTML = `Estimate: ${estimate}, ground truth: ${Math.PI}, error: ${Number((estimate - Math.PI) * 100 / Math.PI).toFixed(5)}%<br>Sampler is ${sampler.name}`;
 
             };
+
+            const runRefinement = function() {
+                
+                ctx.fillStyle = "#fffcf0";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // run prepass
+                // flat array since i'm too lazy to write 2D array code right now
+                let prepass = new Array(64);
+
+                let totHits = 0;
+                let totTries = 0;
+                for(let x = 0; x < 8; x++) {
+                    for(let y = 0; y < 8; y++) {
+                        
+                        // use half of our 1024 samples (8/bin) for the prepass
+                        let hits = 0;
+
+                        for(let i = 0; i < 8; i++) {
+                        
+                            let u = Math.random() / 8 + x / 8;
+                            let v = Math.random() / 8 + y / 8;
+                            if(isHit(u, v)) {
+                                hits++;
+                                totHits++;
+                                drawDot(u, v, "#ff8080");
+                            } else {
+                                drawDot(u, v, "#8080ff");
+                            }
+
+                            totTries++;
+                        }
+
+                        prepass[y * 8 + x] = hits;
+
+                    }
+                }
+
+                console.log(totHits, totTries, totHits * 4 / totTries);
+
+                // distribute remaining 512 samples based on prepass results
+                let finalPassNumSamps = new Array(64);
+
+                let distTot = 0;
+                for(let i = 0; i < 64; i++) {
+                    
+                    // delegate more samples to "controversial" areas
+                    // there's probably a better way to do this than this shitty linear clamp but oh well
+                    finalPassNumSamps[i] = 4 - Math.abs(prepass[i] - 4);
+                    distTot += finalPassNumSamps[i];
+
+                }
+
+                // expand to 512
+                for(let i = 0; i < 64; i++) {
+                    finalPassNumSamps[i] *= 512 / distTot;
+                }
+
+                // run final pass
+                let estimate = 0;
+                for(let i = 0; i < 64; i++) {
+                    let x = i % 8;
+                    let y = Math.floor(i / 8);
+
+                    let hits = 0;
+                    for(let j = 0; j < finalPassNumSamps[i]; j++) {
+                        let u = Math.random() / 8 + x / 8;
+                        let v = Math.random() / 8 + y / 8;
+                        if(isHit(u, v)) {
+                            hits++;
+                            drawDot(u, v, "#ff0000");
+                        } else {
+                            drawDot(u, v, "#0000ff");
+                        }
+                    }
+                    
+                    // interpolate between prepass and refinement pass results
+                    // if the prepass was "uncontroversial", prefer it
+                    // otherwise, prefer the refinement pass
+                    estimate += (hits + prepass[i]) / (finalPassNumSamps[i] + 8);
+
+                }
+
+                estimate = estimate * 4 / 64;
+                data.innerHTML = `Estimate: ${estimate}, ground truth: ${Math.PI}, error: ${Number((estimate - Math.PI) * 100 / Math.PI).toFixed(5)}%<br>Sampler is refinementSampler`;
+
+            };
+
         </script>
     </body>
 </html>
