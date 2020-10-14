@@ -91,6 +91,32 @@ const atomicToQuantum = function(atomic) {
 
 const atomicToConfig = function(atomic) {
 
+    let nmaster = 1, lmaster = 0;
+    let str = "";
+    let letters = ["s", "p", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"];
 
+    let i = 0;
+    while(i < 10) {
+        
+        // do the staircase descend thing
+        let n = nmaster, l = lmaster;
+        do {
+            if(atomic <= 2 * (l * 2 + 1)) {
+                return str + n + letters[l] + atomic;
+            } else {
+                str += n + letters[l] +  (2 * (l * 2 + 1)) + " ";
+                atomic -= 2 * (l * 2 + 1);
+            }
+            l--;
+            n++;
+        } while(l >= 0);
+
+        if(lmaster + 1 == nmaster) {
+            nmaster++;
+        } else {
+            lmaster++;
+        }
+
+    }
 
 };
