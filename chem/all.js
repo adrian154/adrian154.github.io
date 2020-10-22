@@ -89,11 +89,12 @@ const atomicToQuantum = function(atomic) {
 
 };
 
-const atomicToConfig = function(atomic) {
+const atomicToConfig = function(atomic, noble) {
 
     let nmaster = 1, lmaster = 0;
     let str = "";
     let letters = ["s", "p", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"];
+    let nobleElectrons = [];
 
     let i = 0;
     while(i < 10) {

@@ -6,4 +6,23 @@ body {
     margin-left: auto;
     margin-right: auto;
     margin-top: 3.0em;
+
+}
+
+input[type=text] {
+    font-family: inherit;
+    font-size: 1.0em;
+    height: 2.0em;
+    margin-bottom: 1.0em;
+}
+
+button {
+    font-size: 1.0em;
+    height: 2.0em;
+    background-color: #459fff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-family: inherit;
+    margin-left: 1.0em;
 }
