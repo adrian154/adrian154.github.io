@@ -20,7 +20,7 @@ const MAP_HEIGHT = map[0].length;
 
 // Initialize globals
 // NOTE - Don't copy this. Lots of global state is bad practice!!!
-let pos = [30, 30];
+let pos = [100, 100];
 let vel = [0, 0];
 
 let viewAngle = Math.random() * 2 * Math.PI;
@@ -132,7 +132,7 @@ const draw = function() {
         if(isFinite(dist)) {
             let fprime = focalLength / Math.cos(viewAngle - angle);
             let width = tileSize * fprime / dist;
-            let color = 25000 / dist;
+            let color = Math.round(5000 / dist);
             ctx.fillStyle = `rgb(${color},${color},${color})`;
             ctx.fillRect(screenX, (canvas.height - width) / 2, 1, width);
         }
@@ -152,24 +152,26 @@ const draw = function() {
 // Update player position
 const update = function() {
 
+    const walkSpeed = 1;
+
     if(controls.forward) {
-        pos[0] += Math.cos(viewAngle) * 3;
-        pos[1] += Math.sin(viewAngle) * 3;
+        pos[0] += Math.cos(viewAngle) * walkSpeed;
+        pos[1] += Math.sin(viewAngle) * walkSpeed;
     }
 
     if(controls.backward) {
-        pos[0] -= Math.cos(viewAngle) * 3;
-        pos[1] -= Math.sin(viewAngle) * 3;
+        pos[0] -= Math.cos(viewAngle) * walkSpeed;
+        pos[1] -= Math.sin(viewAngle) * walkSpeed;
     }
 
     if(controls.left) {
-        pos[0] += Math.sin(viewAngle) * 3;
-        pos[1] -= Math.cos(viewAngle) * 3;   
+        pos[0] += Math.sin(viewAngle) * walkSpeed;
+        pos[1] -= Math.cos(viewAngle) * walkSpeed;   
     }
 
     if(controls.right) {
-        pos[0] -= Math.sin(viewAngle) * 3;
-        pos[1] += Math.cos(viewAngle) * 3;
+        pos[0] -= Math.sin(viewAngle) * walkSpeed;
+        pos[1] += Math.cos(viewAngle) * walkSpeed;
     }
 
     if(controls.lookLeft) {
@@ -204,5 +206,9 @@ const handleKey = (key, state) => {
 
 window.addEventListener("keydown", (event) => handleKey(event.key, true));
 window.addEventListener("keyup", (event) => handleKey(event.key, false));
+canvas.addEventListener("click", (event) => canvas.requestPointerLock());
+canvas.addEventListener("mousemove", (event) => {
+    viewAngle += event.movementX * 0.003;
+});
 
 run();
