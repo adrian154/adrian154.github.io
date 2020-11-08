@@ -143,3 +143,12 @@ a:hover {
 .card:last-child {
     margin-left: 1.0em;
 }
+
+#bottom-text {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    font-size: 12pt;
+    font-family: monospace;
+    color: #aaaaaa;
+}
