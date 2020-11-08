@@ -1,0 +1,145 @@
+body {
+    margin: 0;
+}
+
+#outer-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+#left-pane {
+
+    /* Layout */
+    flex-grow: 2;
+    z-index: 1;
+
+    /* Styling */
+    background-color: #ffffff;
+    box-shadow: 0px 0px 7px #888888;
+    padding: 1.0em 2.0em;
+    font-family: monospace;
+    font-size: 1.5em;
+
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#left-pane a, a:visited {
+    color: #000000;
+}
+
+#left-pane a:hover {
+    color: #888888;
+}
+
+#right-pane a {
+    color: #2bc2ff;
+}
+
+#right-pane a:visited {
+    color: #a3a3a3;
+}
+
+#right-pane {
+
+    /* Layout */
+    flex-basis: 80%;
+    flex-grow: 1;
+    z-index: 0;
+
+    /* Styling */
+    scroll-behavior: smooth;
+    background-color: #ebf2f5;
+    padding-left: 15%;
+    padding-right: 15%;
+    padding-top: 3.0em;
+    font-family: monospace;
+    overflow-y: scroll;
+
+}
+
+.card {
+
+    /* Styling */
+    border-radius: 5px;
+    background-color: #ffffff;
+    padding: 1.0em 1.5em;
+    margin: 2.0em 0;
+
+}
+
+.card p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 12pt;
+}
+
+.card span {
+    font-family: sans-serif;
+    font-size: 10pt;
+    background-color: #dddddd;
+    border-radius: 3px;
+    padding: 4px 5px;
+}
+
+.card h1 {
+    font-family: monospace !important;
+}
+
+.card img {
+    display: block;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.0em;
+    margin-bottom: 1.0em;
+}
+
+.card a img {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1.0em;
+    margin-bottom: 0;
+    width: 3.0em;
+    height: 3.0em;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    margin-top: 2.0em;
+    margin-bottom: 2.0em;
+    background-color: #aaaaaa;
+}
+
+#grid-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 1.0em;
+}
+
+.row .card {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.card:first-child {
+    margin-right: 1.0em;
+}
+
+.card:last-child {
+    margin-left: 1.0em;
+}

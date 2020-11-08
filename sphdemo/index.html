@@ -8,13 +8,13 @@
 // The original source code is at https://github.com/cerrno/mueller-sph/blob/master/src/main.cpp
 
 const GRAVITY = 12000 * -9.8;   // on the y-coordinate
-const REST_DENSITY = 1100;
+const REST_DENSITY = 1000;
 const GAS_CONSTANT = 2000;
 const H = 16;                   // radius of each particle
 const HSQ = H * H;              // radius squared for optimization
 const MASS = 65;                // mass of each particle
 const VISCOSITY = 250;          // viscosity constant
-const DT = 0.0009;              // integration timestep
+const DT = 0.0008;              // integration timestep
 
 // constants used to calculate smoothing kernels
 const POLY6 = 315 / (64 * Math.PI * Math.pow(H, 9));
@@ -22,7 +22,7 @@ const SPIKY_GRAD = -45 / (Math.PI * Math.pow(H, 6));
 const VISCOSITY_LAPLACIAN = 45 / (Math.PI * Math.pow(H, 6));
 
 // "coefficient of restitution" of the boundary
-const BOUNDARY_DAMPING = -0.7;
+const BOUNDARY_DAMPING = -0.5;
 
 let particles = [];
 
@@ -31,26 +31,6 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const DAM_PARTICLES = 500;
-
-const init = function() {
-    /*
-    for(let y = H; y < canvas.height - H * 2; y += H) {
-        for(let x = canvas.width / 4; x <= canvas.width / 2; x += H) {
-            if(particles.length < DAM_PARTICLES) {
-                particles.push({
-                    x: x + Math.random() - 0.5,
-                    y: y,
-                    dx: 0,
-                    dy: 0,
-                    fx: 0,
-                    fy: 0,
-                    rho: 0,
-                    p: 0
-                });
-            }
-        }
-    }*/
-};
 
 const integrate = function() {
     for(let particle of particles) {

@@ -1,78 +1,139 @@
-<html>
-
+<html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>Adrian Zhang</title>
-        <style>
-body {
-    width: 35%;
-    margin-left: auto;
-    margin-right: auto;
-    color: #222222;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-h1 {
-    font-size: 3.0em;
-}
-
-h2 {
-    margin-top: 2.0em;
-}
-        </style>
+        <meta charset="UTF-8">
+        <title>Homepage</title>
+        <link rel="stylesheet" href="styles/fonts.css">
+        <link rel="stylesheet" href="styles/homepage.css">
     </head>
-
     <body>
-
-        <!-- Padding -->
-        <div style="margin-top: 3.0em;"></div>
-        <h1 style="font-size: 3.0em;">Hello!</h1>
-        <p>I'm Adrian and I write code.</p>
-
-        <!--
-        <h2>Why is this page so ugly?</h2>
-        <p>I don't believe in "responsive" CSS-packed sites with random buttons, obtrusive UI, and constant fade-ins and fade-outs. This format conveys its contents in a simple and straightforward way without visually assaulting you. For reference, this entire page has 13 lines of CSS.</p>
-        <p>See also: <a href="https://motherfuckingwebsite.com/">Motherfucking Website</a>.</p>
-        -->
-        
-        <h2>Projects</h2>
-        <p><b><a href="https://github.com/adrian154/egg-kernel">egg-kernel</a></b>: an open-source x86 kernel.</p>
-        <p><b><a href="https://github.com/adrian154/java-pathtracer">java-pathtracer</a></b>: a renderer written entirely written in Java, capable of generating photorealistic images using pathtracing.</p>
-        <p><b><a href="https://github.com/adrian154/JART">Just Another RayTracer (JART)</a></b>: a GPU-accelerated version of java-pathtracer using OpenCL. It's much harder than it seems!</p>
-        <p><b><a href="https://devpost.com/software/adrian-academy">Adrian Academy</a></b>: a JS teaching tool made by me and several other contributors for PalyHacks 2020.</p>
-        <p><b><a href="https://devpost.com/software/intheloop-4gjy1o">In the Loop</a></b>: a small web app developed for AtlasHacks 2020.</p>
-
-        <h2>Minor Projects</h2>
-        <p><b><a href="https://github.com/adrian154/tga-encoder">tga-encoder</a></b>: C "library" to encode TGA images.</p>
-        <p><b><a href="https://github.com/adrian154/tiny-wav">tiny-wav</a></b>: another bit of C code to encode WAV audio.</p>
-
-        <h2>Miscellaneous Tinkerings</h2>
-        <ul>
-            <li><b><a href="debate/debate.html">Public forum debate dictionary</a></b>, for whenever you hear some weird jargon in-round</li>
-            <li><b><a href="random/lightshot_grabber.html">Random Lightshot finder</a></b>, since Lightshot is ridiculously insecure</li>
-            <li><b><a href="games/cddemo/cddemo.html">Tiny collision detection demo</a></b>, for an unfinished project</li>
-            <li><b><a href="games/spacegame/game.html">SPACE GAME</a></b> (100% accurate)</li>
-            <li>A tiny implementation of <b><a href="games/sphdemo/sph.html">smoothed particle hydrodynamics</a></b>, to showcase how easy it is</li>
-            <li><b><a href="random/helloworld.html">Terrible C Hello World generator</a></b></li>
-            <li><b><a href="games/minesweeper/minesweeper.html">Minesweeper</a></b></li>
-            <li><b><a href="mathtool/createmath.html">A lightweight MathJax sharing tool</a></b></li>
-            <li><b><a href="calendarfact.html">Calendar fact generator</a></b></li>
-        </ul>
-        
-        <h2>Articles</h2>
-        <ul>
-            <li><a href="articles/tuning.html">Tuning Systems</a></li>
-            <li><a href="articles/null.html">What's at NULL?</a></li>
-        </ul>
-
-        <h2>Other Stuff About Me</h2>
-        <p>Check out my <a href="github.com/adrian154">GitHub</a>, since I do most of my coding on there.</p>
-
-        <h2>Contact</h2>
-        <p>My preferred platform for communication is Discord. You can send me a message at <b>drain#5012</b>. Of course, if you prefer the snail-mail of the internet you can also email me at <b>adrian@crocodilecoding.com</b>.</p>
-
-        <p>&copy; 2020 Adrian Zhang. Why would you copy any of this?</p>
-
+        <div id="outer-container">
+            <div id="left-pane">
+                <h1>navigation</h1>
+                <p><a href="#about">about</a></p>
+                <p><a href="#projects">projects</a></p>
+                <p><a href="#misc">miscellaneous</a></p>
+                <p><a href="#hackathons">hackathons</a></p>
+            </div>
+            <div id="right-pane">
+                <h1 id="about">about</h1>
+                <div class="card">
+                    <p>I'm Adrian. Due to an unfortunate accident, I have been sucked into a life of coding. I've made some pretty neat stuff on the downward spiral, though.</p>
+                    <p>I've dabbled in all sorts of areas, from web development to language design as well as quite a bit of low-level tinkering. If you'd like to talk about programming, I would be more than welcome if you reached out.</p>
+                    <p>You can contact me in a few ways. I would prefer if you messaged me on Discord at <b>drain#5012</b>, though if you would rather use the snailmail of the Internet you can also reach me at <b>azhangcc@gmail.com</b>. My network currently does not support IPoAC (IP over Avian Carriers), so any attempts to contact me via carrier pigeon will result in a connection timeout as per <a href="https://tools.ietf.org/html/rfc1149">RFC 1149</a>.</p>
+                    <p><b>Links</b></p>
+                    <ul>
+                        <li><b>GitHub:</b> <a href="https://github.com/adrian154">@adrian154</a></li>
+                    </ul>
+                    <noscript><p><b>Hey!</b> It appears that you do not have JavaScript enabled in your browser. If you encounter any issues while browsing this page, please contact me. You could also create an issue on this repository.</p></noscript>
+                </div>
+                <h1 id="projects">projects</h1>
+                <div class="card">
+                    <h2>egg-kernel</h2>
+                    <p>An open source x86 kernel, for the sake of it. Written in assembly and C.</p>
+                    <span>C</span> <span>x86</span> <span>assembly</span> <span>kernel</span>
+                    <a href="https://github.com/adrian154/egg-kernel"><img src="images/GitHub-Mark-64px.png"></a>
+                    <div class="divider"></div>
+                    <img src="images/egg-kernel.png">
+                </div>
+                <div class="card">
+                    <h2>java-pathtracer</h2>
+                    <p>A photorealistic renderer implemented in Java. Uses pathtracing to produce "realistic" 3D renders. Incredibly slow, but well worth it!</p>
+                    <span>Java</span> <span>pathtracing</span> <span>3D</span>
+                    <a href="https://github.com/adrian154/java-pathtracer"><img src="images/GitHub-Mark-64px.png"></a>
+                    <div class="divider"></div>
+                    <img src="images/java-pathtracer.png">
+                </div>
+                <div class="card">
+                    <h2>JART</h2>
+                    <p><b>J</b>ust <b>A</b>nother <b>R</b>ay<b>T</b>racer. An attempt to take java-pathtracer to the next level by utilizing the power of the GPU! Uses Java bindings for OpenCL. It's much harder than it looks.</p>
+                    <span>Java</span> <span>OpenCL</span>
+                    <a href="https://github.com/adrian154/JART"><img src="images/GitHub-Mark-64px.png"></a>
+                </div>
+                <div class="card">
+                    <h2>reddit-saved-slideshow</h2>
+                    <p>A way to view your saved Reddit posts as a slideshow.</p>
+                    <span>API</span> <span>Node</span> <span>JavaScript</span>
+                    <a href="https://github.com/adrian154/reddit-saved-slideshow"><img src="images/GitHub-Mark-64px.png"></a>
+                </div>
+                <div class="card">
+                    <h2>TGA-encoder</h2>
+                    <p>A C library for encoding TGA images.</p>
+                    <span>C</span>
+                    <a href="https://github.com/adrian154/tga-encoder"><img src="images/GitHub-Mark-64px.png"></a>
+                </div>
+                <div class="card">
+                    <h2>tiny-WAV</h2>
+                    <p>A C library for encoding WAV suond.</p>
+                    <span>C</span>
+                    <a href="https://github.com/adrian154/tiny-wav"><img src="images/GitHub-Mark-64px.png"></a>
+                </div>
+                <div class="card">
+                    <h2>MCWebSocket</h2>
+                    <p>A Minecraft plugin that exposes a remote administration and monitoring API over WebSocket, along with Discord intercommunication.</p>
+                    <span>Java</span> <span>API</span> <span>Minecraft</span>
+                    <a href="https://github.com/adrian154/MCWebSocketPlugin"><img src="images/GitHub-Mark-64px.png"></a>
+                </div>
+                <h1 id="misc">miscellaneous</h1>
+                <div id="grid-container">
+                    <div class="row">
+                        <div class="card">
+                            <h3>Barycentric Coordinates Demo</h3>
+                            <p><a href="bary_demo/">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Collision Demo</h3>
+                            <p><a href="collision/">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Debate Dictionary</h3>
+                            <p><a href="debate/">Check it out!</a></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card">
+                            <h3>Monte Carlo Integration</h3>
+                            <p><a href="integration/">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Math Sharing Tool</h3>
+                            <p><a href="mathtool/createmath.html">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Minesweeper</h3>
+                            <p><a href="minesweeper/">Check it out!</a></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card">
+                            <h3>2.5D Raycaster</h3>
+                            <p><a href="raycast/">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Smoothed Particle Hydrodynamics Demo</h3>
+                            <p><a href="sph/">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Spring Simulation</h3>
+                            <p><a href="spring/">Check it out!</a></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card">
+                            <h3>Calendar Fact Generator</h3>
+                            <p><a href="random/calendarfact.html">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>Game of Life</h3>
+                            <p><a href="random/gol.html">Check it out!</a></p>
+                        </div>
+                        <div class="card">
+                            <h3>C Hello World Obfuscator</h3>
+                            <p><a href="random/helloworld.html">Check it out!</a></p>
+                        </div>
+                    </div>
+                </div>
+                <h1 id="hackathons">hackathons</h1>
+            </div>
+        </div>
     </body>
-
 </html>
