@@ -7,10 +7,11 @@ canvas.height = window.innerHeight;
 // Constants
 const POINT_RADIUS = 5;
 const POINT_MASS = 1;
-const SPRING_CONST = 1000;
-const SPRING_LENGTH = 50;
+const SPRING_CONST = 2500;
+const SPRING_LENGTH = 10;
 let TIMESTEP = 1 / 60;
 const GRAVITY = 900;
+const DRAG_COEFF = 0.007;
 
 // Global state
 const points = [];
@@ -18,9 +19,9 @@ const points = [];
 // Run funcs
 const addPoints = function() {
 
-    for(let i = 0; i < 15; i++) {
+    for(let i = 0; i < 100; i++) {
         points.push({
-            x: i * 30 + 300,
+            x: i * 10 + 300,
             y: canvas.height / 2,
             dx: 0,
             dy: 0,
@@ -97,18 +98,25 @@ const step = function() {
     for(let point of points) {
 
         if(!point.fixed) {
+
+            // drag
+            let v = Math.sqrt(point.dx * point.dx + point.dy * point.dy);
+            let drag = DRAG_COEFF * v * v;
+            if(v > 0.01) {
+                point.fx -= drag * point.dx / v;
+                point.fy -= drag * point.dy / v;
+            }
+
             point.dx += point.fx / POINT_MASS * TIMESTEP;
             point.dy += (point.fy / POINT_MASS + GRAVITY) * TIMESTEP;
-
-            point.dx *= 0.97;
-            point.dy *= 0.97;
 
             point.x += point.dx * TIMESTEP;
             point.y += point.dy * TIMESTEP;
 
-            point.fx = 0;
-            point.fy = 0;
         }
+
+        point.fx = 0;
+        point.fy = 0;
 
     }
 

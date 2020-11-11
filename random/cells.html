@@ -1,0 +1,327 @@
+
+<!-- saved from url=(0054)file:///C:/Users/oreo/Documents/js_projects/cells.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body>
+		<canvas id="main" width="880" height="880"></canvas><br><br>
+		<canvas id="hist" width="360" height="100"></canvas>
+		<script>
+var canvas = document.getElementById("main");
+var ctx = canvas.getContext("2d");
+
+var histCanvas = document.getElementById("hist");
+var histCtx = histCanvas.getContext("2d");
+var populationData = Array(histCanvas.width);
+
+var cells = [];
+var size = 2;
+var delay = 0;
+
+var fieldWidth = 440;
+var fieldHeight = 440;
+canvas.width = fieldWidth * size;
+canvas.height = fieldHeight * size;
+var iteration = 0;
+
+window.onload = function() { gen(); run(); };
+
+function gen() {
+	for(var i = 0; i < 720; i++) {
+		var cooldown = Math.random() * 300 + 200;
+		
+		cells.push({
+			x: Math.floor(Math.random() * fieldWidth),
+			y: Math.floor(Math.random() * fieldHeight),
+			color: i / 2,
+			age: 0,
+			strengthBorn: Math.random() * 500 + 500,
+			cooldownBorn: cooldown,
+			matingCooldown: cooldown,
+			range: 100,
+			dead: false,
+			diseased: Math.random() > 0.7 ? true : false,
+		});
+	}
+}
+
+function run() {
+	/* Run. */
+	stat_diseased = 0;
+	stat_alive = 0;
+	
+	for(var i = 0; i < cells.length; i++) {
+		step(i);
+	}
+	
+	/* Prune dead cells. */
+	var newCells = [];
+	for(var i = 0; i < cells.length; i++) {
+		if(!cells[i].dead) newCells.push(cells[i]);
+	}
+	cells = newCells;
+	
+	/* Re-infect. */
+	if(cells.length > 720) {
+		
+		for(var i = 0; i < (cells.length - 720) / 10; i++) {
+			cells[Math.floor(Math.random()*cells.length)].diseased = true;
+		}
+		
+	}
+	
+	if(cells.length == 0) {
+		gen();
+		console.log("Reset!");
+	}
+	
+	if(iteration % 1 == 0) {
+		populationData.shift();
+		populationData.push(stat_diseased * 100 / cells.length);
+	}
+	
+	draw();
+	iteration++;
+	
+	setTimeout(function(){ requestAnimationFrame(run) }, delay);
+}
+
+function sign(n) {
+	n = Math.floor(n);
+	return n > 0 ? 1 : (n == 0 ? 0 : -1);
+}
+
+var stat_diseased;
+var stat_alive;
+var stat_born = 0;
+var stat_died = 0;
+var stat_killed = 0;
+
+function step(i) {
+	
+	var cell = cells[i]
+	
+	/* If age > strength: Die. */
+	if(cell.age > cell.strengthBorn) {
+		cell.dead = true;	
+		stat_died++;
+	}
+	
+	/* If cell hasn't mated for too long: Restart cooldown. */
+	if(cell.matingCooldown < -70) {
+		cell.matingCooldown = cell.cooldownBorn;
+	}
+	
+	/* Find random direction. */
+	var dx = Math.floor(Math.random() * 3 - 1); 
+	var dy = Math.floor(Math.random() * 3 - 1);
+	
+	/* If can mate: Seek out the nearest cell. */
+	var nearestX, nearestY;
+	var distance = Infinity;
+	
+	for(var n = 0; n < cells.length; n++) {
+		if(n == i || cells[n].matingCooldown > 0) continue;
+		
+		var newDistance = Math.pow(cells[n].x - cell.x, 2) + Math.pow(cells[n].y - cell.y, 2);
+		if(newDistance < distance && newDistance < cell.range) {
+			distance = newDistance;
+			nearestX = cells[n].x;
+			nearestY = cells[n].y;
+		}
+	}
+	
+	if((cell.diseased || cell.matingCooldown < 0) && distance != Infinity) {
+		var mx = sign(nearestX - cell.x);
+		var my = sign(nearestY - cell.y);
+		
+		if(Math.random() > 0.5) dx = mx;
+		else dy = my;
+	}
+	
+	if(cell.x + dx > fieldWidth || cell.x + dx < 0) dx = 0;
+	if(cell.y + dy > fieldHeight || cell.y + dy < 0) dy = 0;
+	
+	/* Check if cell wil be on top of another after move. */
+	var bottomNum = getCell(cell.x + dx, cell.y + dy);
+	var bottom = cells[bottomNum];
+	
+	/* If not: Do the move. */
+	if(!bottom) {
+			
+		cell.x += dx;
+		cell.y += dy;
+		
+	} else {
+	
+		/* If diseased: chance of spreading disease. */
+		if(cell.diseased && Math.random() > 0.4) {
+			cells[bottomNum].diseased = true;
+		}
+		
+		/* If delta is too great: Attack! */
+		if(Math.abs(cell.color - bottom.color) > 36 && Math.random() >= 0.5) {
+		
+			/* Kill off weaker cell. */
+			if(cell.strengthBorn > bottom.strengthBorn) {
+				bottom.dead = true;
+				cell.age += (bottom.strengthBorn) * 0.3;
+			} else {
+				cell.dead = true;
+				bottom.age += (bottom.strengthBorn) * 0.3;
+			}
+			
+			stat_killed++;  
+			stat_died++;
+			
+		} else if(cell.matingCooldown <= 0 && bottom.matingCooldown <= 0) {
+			/* Otherwise, if can mate (&& mate is also able to mate): */
+						
+			/* Create new cell, with average stats. */
+			var newCell = {
+				x: cell.x,
+				y: cell.y,
+				color: Math.sqrt(cell.color * bottom.color) + Math.random() * 4 - 2,
+				age: 0,
+				strengthBorn: (cell.strengthBorn + bottom.strengthBorn) / 2,
+				cooldownBorn: (cell.cooldownBorn + bottom.cooldownBorn) / 2,
+				matingCooldown: (cell.cooldownBorn + bottom.cooldownBorn) / 2,
+				dead: false,
+				diseased: (cell.diseased || bottom.diseased) && Math.random() > 0.3
+			}
+			
+			/* Add the new cell. */
+			if(!cell.diseased && !bottom.diseased)
+				cells.push(newCell);
+			else if(Math.random() > 0.7) 
+				cells.push(newCell);
+				
+			stat_born++;
+			
+			/* Reset mating cooldown. */
+			cell.matingCooldown = cell.cooldownBorn;
+			
+		}
+	
+	}
+	
+	cell.age++;
+	stat_alive++;
+	
+	if(cell.diseased) {
+		stat_diseased++;
+		cell.age += 1;
+	}
+	
+	cell.matingCooldown--;
+	
+	cells[i] = cell;
+}
+
+function getCell(x, y) {
+	for(var i = 0; i < cells.length; i++) {
+		if(cells[i].x == x && cells[i].y == y) {
+			return i;
+		}
+	}
+	return false;
+}
+
+function draw() {
+	
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	var numCells = cells.length;
+	
+	var histData = new Array(360);
+	var mainData = new Array(36);
+	for(var i = 0; i < histData.length; i++) {
+		histData[i] = 0;
+	}
+	for(var i = 0; i < mainData.length; i++) {
+		mainData[i] = 0;
+	}
+
+    var topSpecies = 0;
+	var topAmount = 0;
+	
+	var topGenus = 0;
+	var topAmountG = 0;
+
+	for(var i = 0; i < cells.length; i++) {
+		var cell = cells[i];
+	
+		//ctx.fillStyle = "hsl("+cell.color+",100%," + ((cell.strengthBorn - cell.age) / cell.strengthBorn) * 50 + "%)";
+		ctx.fillStyle = "hsl("+cell.color+",100%," + (cell.diseased ? 20 : 50) + "%)";
+		ctx.fillRect(cell.x * size, cell.y * size, size, size);
+		
+		histData[Math.floor(cell.color)]++;
+		mainData[Math.floor(cell.color/10)]++;
+
+	}
+	
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, canvas.height - 360, 100);
+	histCtx.fillStyle = "#FFF";
+	histCtx.fillRect(0, 0, histCanvas.width, histCanvas.height);
+	
+	for(var i = 0; i < mainData.length; i++) {
+		var amount = mainData[i] * 360 / numCells+1;
+		
+		ctx.fillStyle = "hsl("+i*10+",100%,30%)";
+		ctx.fillRect(i*10, canvas.height - amount, 10, amount);
+		
+		if(mainData[i] > topAmountG) {
+			topAmountG = mainData[i];
+			topGenus = i;
+		}
+	}
+	
+	for(var i = 0; i < histData.length; i++) {
+	
+		var amount = histData[i] * 360 / numCells+1;
+		ctx.fillStyle = "hsl("+i+",100%,50%)";
+		ctx.fillRect(i, canvas.height - amount, 1, amount);
+	
+		if(histData[i] > topAmount) {
+			topAmount = histData[i];
+			topSpecies = i;
+		}
+		
+	}
+
+	for(var i = 0; i < populationData.length; i++) {
+		//var amount = Math.floor(populationData[i] / 10);
+		amount = populationData[i];
+		histCtx.fillStyle = "#000"
+		histCtx.fillRect(i, histCanvas.height - amount, 1, amount);		
+	}
+	
+	ctx.textAlign = "left";
+	ctx.font = "12px Consolas";
+	ctx.fillStyle = "#FFF";
+	ctx.fillText("Alive: " + stat_alive, 5, 15);
+	ctx.fillText("Diseased: " + stat_diseased + " (" + Number(stat_diseased*100/stat_alive).toFixed(0) + "%)", 5, 30);
+	ctx.fillText("Born: " + stat_born, 5, 45);
+	ctx.fillText("Died: " + stat_died, 5, 60);
+	ctx.fillText("Killed: " + stat_killed, 5, 75);
+
+	ctx.fillStyle = "hsl("+topSpecies+",100%,50%)";
+	ctx.fillRect(canvas.width - 40, 10, 30, 30);
+	
+	ctx.textAlign = "right";
+	ctx.fillStyle = "#FFF";
+	ctx.fillText("Top species: #" + topSpecies, canvas.width - 50, 20);
+	ctx.fillText("Members: " + topAmount + " (" + Number(topAmount*100/stat_alive).toFixed(0) + "%)", canvas.width - 50, 35);
+
+    ctx.fillStyle = "hsl("+topGenus*10+",100%,50%)";
+	ctx.fillRect(canvas.width - 40, 50, 30, 30);
+	
+   	ctx.fillStyle = "#FFF";
+    ctx.fillText("Top genus: " + topGenus + "x", canvas.width - 50, 60);
+	ctx.fillText("Members: " + topAmountG + " (" + Number(topAmountG*100/stat_alive).toFixed(0) + "%)", canvas.width - 50, 75);
+
+}
+
+
+		</script>
+	
+</body></html>

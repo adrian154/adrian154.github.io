@@ -6,7 +6,6 @@ const radToDeg = (radians) => radians * 180 / Math.PI;
 const degToRad = (degrees) => degrees * Math.PI / 180;
 const FOVToFocal = (degrees) => canvas.width / (2 * Math.tan(degToRad(degrees) / 2));
 const floor = (x) => x < 0 ? Math.ceil(x) : Math.floor(x);
-//const nextGridPos = (x, dir) => (dir < 0 ? Math.floor : Math.ceil)((x + 0.001) / tileSize) * tileSize;
 const nextGridPos = (x, dir) => (Math.floor(x / tileSize) + (dir > 0 ? 1 : -0.00001)) * tileSize;
 
 // Constants
@@ -177,9 +176,12 @@ const draw = function() {
 
             let r, g, b;
             if(Math.abs(canvas.height / 2 - y) < sliceHeight) {
-                r = 255; g = 255; b = 255;
+                r = 0; g = 255; b = 0;
             } else {
-                r = 255; g = 0; b = 0;
+                
+                // Shade
+                let stile = tileSize / 2;
+
             }
 
             let idx = y * canvas.width + screenX;
