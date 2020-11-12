@@ -12,7 +12,8 @@ body {
 #left-pane {
 
     /* Layout */
-    flex-grow: 2;
+	flex-basis: 25%;
+    flex-grow: 1;
     z-index: 1;
 
     /* Styling */
@@ -20,7 +21,6 @@ body {
     box-shadow: 0px 0px 7px #888888;
     padding: 1.0em 2.0em;
     font-family: monospace;
-    font-size: 1.5em;
 
 }
 
@@ -33,7 +33,8 @@ a:hover {
     text-decoration: underline;
 }
 
-#left-pane a, a:visited {
+#left-pane .big, a:visited {
+	font-size: 1.5em;
     color: #000000;
 }
 
@@ -41,7 +42,7 @@ a:hover {
     color: #888888;
 }
 
-#right-pane a {
+a {
     color: #2bc2ff;
 }
 
@@ -52,13 +53,13 @@ a:hover {
 #right-pane {
 
     /* Layout */
-    flex-basis: 80%;
-    flex-grow: 1;
+    flex-basis: 75%;
+    flex-grow: 2;
     z-index: 0;
 
     /* Styling */
     scroll-behavior: smooth;
-    background-color: #ebf2f5;
+    background-color: #f2f5f7;
     padding-left: 15%;
     padding-right: 15%;
     padding-top: 3.0em;
@@ -74,6 +75,8 @@ a:hover {
     background-color: #ffffff;
     padding: 1.0em 1.5em;
     margin: 2.0em 0;
+
+	box-shadow: 0px 0px 8px #cccccc;
 
 }
 
