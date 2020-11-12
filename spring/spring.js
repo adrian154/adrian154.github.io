@@ -7,8 +7,8 @@ canvas.height = window.innerHeight;
 // Constants
 const POINT_RADIUS = 5;
 const POINT_MASS = 1;
-const SPRING_CONST = 2500;
-const SPRING_LENGTH = 10;
+const SPRING_CONST = 1000;
+const SPRING_LENGTH = 20;
 let TIMESTEP = 1 / 60;
 const GRAVITY = 900;
 const DRAG_COEFF = 0.007;
@@ -19,9 +19,9 @@ const points = [];
 // Run funcs
 const addPoints = function() {
 
-    for(let i = 0; i < 100; i++) {
+    for(let i = 0; i < 30; i++) {
         points.push({
-            x: i * 10 + 300,
+            x: i * 20 + 300,
             y: canvas.height / 2,
             dx: 0,
             dy: 0,
