@@ -137,7 +137,7 @@
             };
 
             canvas.addEventListener("mousemove", (event) => {
-                dirCoeff += event.movementX / 200;
+                dirCoeff = (event.offsetX - canvas.width / 2) / event.offsetY
             });
 
             draw();
