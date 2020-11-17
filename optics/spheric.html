@@ -1,8 +1,10 @@
 <html>
     <head>
-        <title>Parabolic Mirror Demo</title>
+        <title>Spherical Mirror Demo</title>
         <style>
-            canvas {
+            #area {
+				width: 840;
+				height: 840;
                 border: 1px solid #aaaaaa;
                 
                 position: absolute;
@@ -12,10 +14,26 @@
                 right: 0;
                 margin: auto;
             }
+			
+			#blurb {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #eeeeee88;
+				padding: 0 1.0em;
+				width: 15em;
+			}
         </style>
     </head>
     <body>
-        <canvas id="canvas" width="840" height="840"></canvas>
+		<div id="area">
+			<div id="blurb">
+				<p>This is a demonstration of <i>spherical aberration</i>, referring to a spherical mirror's inability to focus light from a distant source onto a single point.</p>
+				<p>Move the cursor around to control the direction which the beam is coming from. Notice how no matter which direction the beam points, it is never focused into a point, even by this ideal mirror.</p>
+				<p>For more, check out the corresponding demo on <a href="coma.html">coma</a>.</p>
+			</div>
+			<canvas id="canvas" width="840" height="840"></canvas>
+		</div>
         <script>
 
             // WARNING:
@@ -25,10 +43,10 @@
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
 
-            const MIRR_CONST = 0.0009;
+            const RADIUS = 600;
 
             const func = function(x) {
-                return MIRR_CONST * x * x;
+                return RADIUS - Math.sqrt(RADIUS * RADIUS - x * x);
             };
 
             const drawMirror = function() {
@@ -59,9 +77,9 @@
                 dirX /= len;
                 dirY /= len;
 
-                let a = MIRR_CONST * dirX * dirX;
-                let b = 2 * MIRR_CONST * origX * dirX - dirY;
-                let c = MIRR_CONST * origX * origX - origY;
+                let a = dirX * dirX + dirY * dirY;
+                let b = 2 * (origX * dirX + origY * dirY - RADIUS * dirY);
+                let c = origX * origX + origY * origY - 2 * origY * RADIUS;
 
                 let discrim = b * b - 4 * a * c;
                 if(discrim >= 0) {
@@ -84,7 +102,7 @@
 
                     // calculate normal
                     /// this method is super wacky
-                    let m = 2 * MIRR_CONST * x;
+                    let m = x / Math.sqrt(RADIUS * RADIUS - x * x);
                     let normX = -m;
                     let normY = 1;
                     let len = Math.sqrt(normX * normX + normY * normY);
@@ -117,11 +135,7 @@
                 ctx.globalAlpha = 1.0;
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#000000";
-                ctx.font = "16px monospace";
-                ctx.fillText("Move the mouse around to move the rays.", 2, 16);
-
+				
                 ctx.strokeStyle = "#000000";
                 ctx.translate(canvas.width / 2, canvas.height);
                 ctx.scale(1, -1);

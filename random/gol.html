@@ -126,6 +126,8 @@ const step = function() {
 
 };
 
+let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
 const draw = function() {
 
 	ctx.fillStyle = "#fffae3";
@@ -135,16 +137,28 @@ const draw = function() {
 
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
+			
+			let r, g, b;
 			if(board[which][x][y] == 1) {
-				ctx.fillRect(
-					x * CELL_SIZE,
-					y * CELL_SIZE,
-					CELL_SIZE,
-					CELL_SIZE
-				);
+				r = 255;
+				g = 0;
+				b = 0;
+			} else {
+				r = 0;
+				g = 0;
+				b = 0;
 			}
+
+			let idx = (y * WIDTH + x) * 4;
+			imgData.data[idx] = r;
+			imgData.data[idx + 1] = g;
+			imgData.data[idx + 2] = b;
+			imgData.data[idx + 3] = 255;
+			
 		}
 	}
+	
+	ctx.putImageData(imgData, 0, 0);
 
 };
 
