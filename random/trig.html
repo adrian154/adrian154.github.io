@@ -69,6 +69,11 @@
                 ctx.closePath();
                 ctx.stroke();
 
+                ctx.fillText("0", ox + 210, oy);
+                ctx.fillText("0.5π", ox, oy - 210);
+                ctx.fillText("π", ox - 210, oy);
+                ctx.fillText("1.5π", ox, oy + 215);
+
                 // ...for graph
                 ctx.beginPath();
                 ctx.moveTo(gx, gy);
@@ -142,7 +147,8 @@
 
             let angle = 0;
             const animate = function() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
                 draw(angle);
                 angle += 0.005;
                 angle = angle % (2 * Math.PI);
