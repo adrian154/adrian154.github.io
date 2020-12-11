@@ -2,7 +2,9 @@
     <head>
         <title>Sine Demo</title>
         <style>
-            #theCanvas {
+            #area {
+                width: 1280px;
+                height: 720px;
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -11,16 +13,33 @@
                 margin: auto;
                 border: 1px solid #aaaaaa;
             }
+
+            #blurb {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #eeeeee88;
+				padding: 1.0em 1.0em;
+				width: 15em;
+			}
         </style>
     </head>
     <body>
-        <canvas id="theCanvas" width="1280" height="720"></canvas>
+        <div id="area">
+            <canvas id="theCanvas" width="1280" height="720"></canvas>
+            <div id="blurb">
+                <input type="checkbox" name="units" onclick="degrees = this.checked;">
+                <label for="units">Degrees (default is radians)</label>
+            </div>
+        </div>
         <script>
             const canvas = document.getElementById("theCanvas");
             const ctx = canvas.getContext("2d");
 
             ctx.textAlign = "center";
             ctx.font = "16px Consolas";
+
+            let degrees = false;
 
             const drawVertAngle = function(gx, gy, angle, text) {
                 
@@ -69,10 +88,10 @@
                 ctx.closePath();
                 ctx.stroke();
 
-                ctx.fillText("0", ox + 210, oy);
-                ctx.fillText("0.5π", ox, oy - 210);
-                ctx.fillText("π", ox - 210, oy);
-                ctx.fillText("1.5π", ox, oy + 215);
+                ctx.fillText(degrees ? "0°" : "0", ox + 210, oy);
+                ctx.fillText(degrees ? "90°" : "0.5π", ox, oy - 210);
+                ctx.fillText(degrees ? "180°" : "π", ox - 210, oy);
+                ctx.fillText(degrees ? "270°" : "1.5π", ox, oy + 215);
 
                 // ...for graph
                 ctx.beginPath();
@@ -81,9 +100,9 @@
                 ctx.closePath();
                 ctx.stroke();
 
-                drawVertAngle(gx, gy, 0, "0");
-                drawVertAngle(gx, gy, Math.PI, "π");
-                drawVertAngle(gx, gy, 2 * Math.PI, "2π");
+                drawVertAngle(gx, gy, 0, degrees ? "0°" : "0");
+                drawVertAngle(gx, gy, Math.PI, degrees ? "90°" : "π");
+                drawVertAngle(gx, gy, 2 * Math.PI, degrees ? "360°" : "2π");
 
                 // draw the circle!
                 ctx.strokeStyle = "#aaaaaa";
