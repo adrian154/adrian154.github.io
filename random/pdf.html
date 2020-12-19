@@ -1,0 +1,53 @@
+<html>
+    <body>
+        <canvas id="theCanvas" width="720" height="720"></canvas>
+        <script>
+            const canvas = document.getElementById("theCanvas");
+            const ctx = canvas.getContext("2d");
+
+            const rand = () => Math.random();
+
+            const randFunc2 = () => Math.pow(rand(), 2);
+            const randFunc3 = () => rand() * rand();
+
+            const numBuckets = 5000;
+            const numSamps = 10000000;
+            const rangeMin = 0;
+            const rangeMax = 1;
+
+            const draw = function(func) {
+
+                let buckets = new Array(numBuckets).fill(0);
+
+                for(let i = 0; i < numSamps; i++) {
+                    
+                    let result = func();
+                    
+                    if(result > rangeMax || result < rangeMin)
+                        throw new Error("got value out of range: " + result);
+                    
+                    let idx = Math.floor((result - rangeMin) / (rangeMax - rangeMin) * numBuckets);
+                    buckets[idx]++;
+
+                }
+
+                let scale = 30;
+                let lineWidth = 720 / numBuckets + 0.1;
+
+                for(let i = 0; i < numBuckets; i++) {
+                    let pdf = buckets[i] / ((rangeMax - rangeMin) / numBuckets) / numSamps;
+                    ctx.fillRect(i / numBuckets * 720, 720 - pdf * scale, lineWidth, pdf * scale);
+                }
+
+            };
+
+            ctx.globalAlpha = 0.5
+            ctx.fillStyle = "#ff0000";
+            draw(randFunc3);
+
+            ctx.fillStyle = "#0000ff";
+            draw(randFunc2);
+
+        </script>
+    </body>
+</html>

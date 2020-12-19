@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <title>Black Body Emission</title>
+        <style>
+            #area {
+                width: 1280px;
+                height: 720px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+                border: 1px solid #aaaaaa;
+            }
+
+            #blurb {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #eeeeee88;
+				padding: 1.0em 1.0em;
+				width: 15em;
+			}   
+        </style>
+    </head>
+    <body>
+        <div id="area">
+            <canvas id="theCanvas" width="1280" height="720">
+                <div id="blurb">
+
+                </div>
+            </canvas>
+        </div>
+        <script>
+            const canvas = document.getElementById("theCanvas");
+            const ctx = canvas.getContext("2d");
+
+            const h = 6.626e-34;
+            const c = 2.998e8;
+            const k = 1.381e-23;
+
+            const planckLaw = (lambda, T) => 2 * Math.PI * c * c * h / Math.pow(lambda, 5) / (Math.pow(Math.E, h * c / lambda / k / T) - 1);
+
+            const draw = function(temperature) {
+                ctx.beginPath();
+                for(let i = 0; i < canvas.width - 200; i++) {
+                    let lambda = (i / (canvas.width - 200)) * 3e-6;
+                    let value = planckLaw(lambda, temperature);
+                    let x = i + 100;
+                    let y = value / 2e11 + 100;
+                    if(i == 0)
+                        ctx.moveTo(x, canvas.height - y);
+                    else
+                        ctx.lineTo(x, canvas.height - y);
+                }
+                ctx.stroke();
+                ctx.closePath();
+            };
+        </script>
+    </body>
+</html>
