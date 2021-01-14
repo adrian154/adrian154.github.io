@@ -7,14 +7,16 @@ canvas.height = window.innerHeight;
 // Constants
 const POINT_RADIUS = 5;
 const POINT_MASS = 1;
-const SPRING_CONST = 1000;
-const SPRING_LENGTH = 20;
+const SPRING_CONST = 2000;
+const SPRING_LENGTH = 5;
 let TIMESTEP = 1 / 60;
-const GRAVITY = 900;
-const DRAG_COEFF = 0.007;
+const GRAVITY = 0;//900;
+let DRAG_COEFF = 0.001;
 
 // Global state
 const points = [];
+
+let paused = true;
 
 // Run funcs
 const addPoints = function() {
@@ -124,7 +126,8 @@ const step = function() {
 
 const run = function() {
     draw();
-    step();
+	if(!paused)
+		step();
     requestAnimationFrame(run);
 };
 
@@ -135,7 +138,7 @@ const start = function() {
 	let ctrlHeld;
 	
 	window.addEventListener("keyup", (event) =>  {if(event.key === "Control") ctrlHeld = false});
-	window.addEventListener("keydown", (event) => {if(event.key === "Control") ctrlHeld = true});
+	window.addEventListener("keydown", (event) => {if(event.key === "Control") ctrlHeld = true; if(event.key === " ") paused = !paused});
 
     window.addEventListener("mousedown", (event) => {
         
