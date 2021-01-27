@@ -12,7 +12,7 @@
         </style>
     </head>
     <body>
-        <canvas id="theCanvas" width="512" height="512"></canvas>
+        <canvas id="theCanvas" width="500" height="500"></canvas>
         <script>
 const canvas = document.getElementById("theCanvas");
 const ctx = canvas.getContext("2d");
@@ -21,7 +21,7 @@ const WIDTH = 5, HEIGHT = 5;
 const cellWidth = canvas.width / WIDTH, cellHeight = canvas.height / HEIGHT;
 
 const board = new Array(WIDTH).fill(0).map(() => new Array(HEIGHT).fill(0));
-const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const alpha = "abdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
 
 const toHex = (r, g, b) => {
     const encodeByte = (number) => (number < 16 ? "0" : "") +  Math.floor(number).toString(16);
@@ -31,10 +31,17 @@ const toHex = (r, g, b) => {
 const generateColors = () => {
 
     let colors = new Array(WIDTH * HEIGHT);
+    let max = 255;
+    let base = 0;
 
     for(let x = 0; x < WIDTH; x++) {
         for(let y = 0; y < HEIGHT; y++) {
-            colors[y * WIDTH + x] = toHex(255, 255 * (x / WIDTH), 255 * (y / HEIGHT));
+            let a = x / WIDTH;
+            let b = y / HEIGHT;
+            let lum = Math.sqrt(a * a + b * b) + 0.6;
+            a /= lum;
+            b /= lum;
+            colors[y * WIDTH + x] = toHex((max - base) * a + base, (max - base) * b + base, max);
         }
     }
 
@@ -98,23 +105,35 @@ const shift = (which, dir, isRow) => {
     putRow(shiftArr(getRow(which, isRow), dir), which, isRow);
 };
 
+const randShift = () => {
+    shift(Math.floor(Math.random() * WIDTH), Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5);
+};
+
+const scramble = () => {
+    for(let i = 0; i < 100; i++) {
+        randShift();
+    }
+};
+
 const draw = () => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "72px Arial";
+    ctx.font = "64px Arial";
     ctx.textAlign = "center";
 
     for(let x = 0; x < board.length; x++) {
         for(let y = 0; y < board[x].length; y++) {
 
             ctx.fillStyle = colors[board[x][y]];
-            ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth + 0.5, cellHeight + 0.5);
+            ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
 
             ctx.fillStyle = "#ffffff";
-            ctx.fillText(alpha[board[x][y]], x * cellWidth + cellWidth / 2, y * cellHeight + cellHeight / 2 + 28);
+            ctx.fillText(alpha[board[x][y]], x * cellWidth + cellWidth / 2, y * cellHeight + cellHeight / 2 + 20);
         
         }
     }
+
+    requestAnimationFrame(draw);
 
 };
 
@@ -139,7 +158,6 @@ canvas.addEventListener("mousemove", (event) => {
     if(mouseDown && (tx != prevTx || ty != prevTy)) {
         if(tx != prevTx) shift(ty, tx - prevTx, true);
         if(ty != prevTy) shift(tx, ty - prevTy, false);
-        draw();
     }
 
     prevMouseX = event.offsetX;
@@ -149,6 +167,7 @@ canvas.addEventListener("mousemove", (event) => {
 
 initBoard();
 draw();
+
         </script>
     </body>
 </html>

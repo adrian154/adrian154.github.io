@@ -12,7 +12,7 @@ body {
 #left-pane {
 
     /* Layout */
-	flex-basis: 25%;
+	flex-basis: 15%;
     flex-grow: 1;
     z-index: 1;
 
@@ -46,22 +46,22 @@ a {
     color: #2bc2ff;
 }
 
-#right-pane a:visited {
+a:visited {
     color: #a3a3a3;
 }
 
 #right-pane {
 
     /* Layout */
-    flex-basis: 75%;
+    flex-basis: 70%;
     flex-grow: 2;
     z-index: 0;
 
     /* Styling */
     scroll-behavior: smooth;
     background-color: #f2f5f7;
-    padding-left: 15%;
-    padding-right: 15%;
+    padding-left: 20%;
+    padding-right: 20%;
     padding-top: 3.0em;
     font-family: monospace;
     overflow-y: scroll;
@@ -137,6 +137,7 @@ a {
 .row .card {
     margin: 0;
     flex-grow: 1;
+    cursor: pointer;
 }
 
 .card:first-child {
