@@ -2,47 +2,32 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Math Thing</title>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-        <script type="text/x-mathjax-config">
-            MathJax.Hub.Config({displayAlign: "left"});
-        </script>
+        <title>Math Editor</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous" onload="render()"></script>
     </head>
     <body>
-        
-        <h1>MathTool</h1>
-        <p><i>This page displays its contents with <a href="https://www.mathjax.org/">MathJax</a>. Go check it out!</i></p>
-        <p>Type LaTeX (enclosed in <code>$$</code>) or AsciiMath (enclosed in <code>`</code>) into the text box, and click "Update" to preview it. TeX/LaTeX and AsciiMath are supported. <a href="https://adrian154.github.io/mathtool/math.html?math=%24%24%5Ctext%7BExample+of+LaTeX%21%7D+%5C%5C+%5Cfrac%7B-b+%5Cpm+%5Csqrt%7Bb%5E2+-+4ac%7D%7D%7B-2a%7D%24%24">Here's an example page.</a></p>
-        <textarea rows="10" cols="80" placeholder="Math goes here..." id="input"></textarea><br><br>
-        <p>Use this link to share your math.</p>
-        <input type="text" id="urlOut" readonly> <button onclick="copy()">Copy to Clipboard</button>
-        <button onclick="update()">Update</button>
-        <p id="preview"></p>
-
+        <textarea id="editor"></textarea>
+        <p id="output"></p>
+        <input type="text" id="share-link" placeholder="Copy this link to share your math">
         <script>
-            let preview = document.getElementById("preview");
-            let input = document.getElementById("input");
-            let output = document.getElementById("urlOut");
-            let url = new URL(window.location);
-
-            const update = function() {
-                preview.innerHTML = input.value;
-                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-                console.log(url);
-                url.pathname = url.pathname.replace("createmath.html", "math.html");
-                url.searchParams.set("math", input.value);
-                output.value = url;
-            };
-
-            const copy = function() {
-                output.select();
-                document.execCommand("copy");
-            };
-
-            if(url.searchParams.get("edit") !== null) {
-                input.value = url.searchParams.get("edit");
+            const shareLinkBox = document.getElementById("share-link");
+            const output = document.getElementById("output");
+            const editor = document.getElementById("editor");
+            const url = new URL(window.location);
+            const render = () => {
+                editor.value = url.searchParams.get("edit");
                 update();
+            };
+            const update = () => {
+                const text = editor.value;
+                katex.render(text, output);
+                url.pathname = url.pathname.replace("createmath.html", "math.html");
+                url.searchParams.set("content", text);
+                shareLinkBox.value = url;
             }
+            editor.addEventListener("keyup", update);
         </script>
     </body>
 </html>
