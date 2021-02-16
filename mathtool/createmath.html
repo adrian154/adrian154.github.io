@@ -8,9 +8,10 @@
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous" onload="render()"></script>
     </head>
     <body>
-        <textarea id="editor"></textarea>
+        <textarea id="editor" placeholder="LaTeX content goes here..."></textarea>
         <p id="output"></p>
         <input type="text" id="share-link" placeholder="Copy this link to share your math">
+        <p id="info">View source on <a href="https://github.com/adrian154/adrian154.github.io/tree/master/mathtool">GitHub</a> &bull; Powered by <a href="https://katex.org/">KaTeX</a></p>
         <script>
             const shareLinkBox = document.getElementById("share-link");
             const output = document.getElementById("output");
