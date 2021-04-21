@@ -36,12 +36,12 @@
         <script>
             const display = document.getElementById("output");
             const deltas = [];
-            let lastClickTime, total;
+            let lastClickTime, total = 0;
 
             const time = () => {
                 const now = Date.now();
                 if(lastClickTime) {
-                    const delta = now - lastClick;
+                    const delta = now - lastClickTime;
                     total += delta;
                     deltas.push(delta); 
                     if(deltas.length > 5) total -= deltas.shift();
