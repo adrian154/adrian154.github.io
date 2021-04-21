@@ -35,19 +35,19 @@
         <p>You can also press any key.</p>
         <script>
             const display = document.getElementById("output");
-            let deltas = [];
-            let lastClick;
+            const deltas = [];
+            let lastClickTime, total;
 
-            const time = (event) => {
+            const time = () => {
                 const now = Date.now();
-                if(lastClick) {
-                    let delta = now - lastClick;
+                if(lastClickTime) {
+                    const delta = now - lastClick;
+                    total += delta;
                     deltas.push(delta); 
-                    if(deltas.length > 5) deltas.shift();
-                    let total = deltas.reduce((a,c)=>a+c,0);
+                    if(deltas.length > 5) total -= deltas.shift();
                     display.textContent = "BPM: " + ((1000 * 60) / (total / deltas.length)).toFixed(1);
                 }
-                lastClick = now;
+                lastClickTime = now;
             };
 
             window.addEventListener("keydown", time);
